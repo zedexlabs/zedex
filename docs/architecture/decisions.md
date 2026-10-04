@@ -1,3 +1,8 @@
+> **Plan document — do not modify.**
+> This file is the agreed plan and architecture. Treat it as source of truth.
+> Changes must go through a new ADR or an explicit plan revision — do not edit in place.
+
+---
 # Architecture Decision Records
 
 Format: context → decision → consequences → revisit trigger. Status of all records: **Accepted (4 Oct 2026)** unless noted. A new service, datastore, or vendor requires a new ADR.

@@ -1,3 +1,8 @@
+> **Plan document — do not modify.**
+> This file is the agreed plan and architecture. Treat it as source of truth.
+> Changes must go through a new ADR or an explicit plan revision — do not edit in place.
+
+---
 # 06 — Integrations
 
 All integrations live in the `integration` service behind adapters in `packages/connector-sdk`. External tools stay authoritative for their records. Recheck each provider's documentation at implementation and record API versions and scopes next to the adapter.

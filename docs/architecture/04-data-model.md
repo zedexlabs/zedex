@@ -1,3 +1,8 @@
+> **Plan document — do not modify.**
+> This file is the agreed plan and architecture. Treat it as source of truth.
+> Changes must go through a new ADR or an explicit plan revision — do not edit in place.
+
+---
 # 04 — Data Model
 
 Each service owns one logical database. No cross-service joins; services hold foreign IDs only and learn about changes through events. Every tenant row carries `workspace_id`, with composite foreign keys inside a database and RLS as defense in depth. The runtime role is neither table owner nor `BYPASSRLS`; the actor and workspace are set transaction-locally; migrations use a separate role.

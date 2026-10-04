@@ -1,3 +1,8 @@
+> **Plan document — do not modify.**
+> This file is the agreed plan and architecture. Treat it as source of truth.
+> Changes must go through a new ADR or an explicit plan revision — do not edit in place.
+
+---
 # 10 — Repository Structure
 
 pnpm workspace with Turborepo. Files are created at the gate that needs them; this tree is the target, not scaffolding. Each TypeScript package has `package.json` and `tsconfig.json`.

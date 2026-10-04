@@ -1,3 +1,8 @@
+> **Plan document — do not modify.**
+> This file is the agreed plan and architecture. Treat it as source of truth.
+> Changes must go through a new ADR or an explicit plan revision — do not edit in place.
+
+---
 # Zedex
 
 Meeting memory, live agendas, commitment tracking, and approved workflow automation for growing B2B SaaS teams. macOS and Windows desktop app plus a web app. Text only: no meeting bot, no recording.

@@ -1,3 +1,8 @@
+> **Plan document — do not modify.**
+> This file is the agreed plan and architecture. Treat it as source of truth.
+> Changes must go through a new ADR or an explicit plan revision — do not edit in place.
+
+---
 # Market Research
 
 Research date: 3 October 2026. This is a sample of public pages, reviews, and community threads. It informs discovery; it is not market sizing or proof of willingness to pay. Verify pricing and features before relying on them.

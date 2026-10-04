@@ -1,3 +1,8 @@
+> **Plan document — do not modify.**
+> This file is the agreed plan and architecture. Treat it as source of truth.
+> Changes must go through a new ADR or an explicit plan revision — do not edit in place.
+
+---
 # Zedex engineering instructions
 
 Shared by Codex, Claude, and human engineers. [ARCHITECTURE.md](ARCHITECTURE.md) and [docs/architecture/](docs/architecture/) are the source of truth. [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md) records delivered and verified work.

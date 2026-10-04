@@ -1,3 +1,8 @@
+> **Plan document — do not modify.**
+> This file is the agreed plan and architecture. Treat it as source of truth.
+> Changes must go through a new ADR or an explicit plan revision — do not edit in place.
+
+---
 # Zedex — Architecture Index
 
 **Updated:** 4 October 2026 · **Status:** approved target architecture, not yet implemented (see [IMPLEMENTATION_STATUS](docs/IMPLEMENTATION_STATUS.md)) · **Cloud:** Azure · **Clients:** macOS/Windows desktop + web (mobile at Gate 6) · **Initial customer:** B2B SaaS, 20–100 employees, English.
