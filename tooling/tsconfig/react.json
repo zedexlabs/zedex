@@ -1,0 +1,8 @@
+{
+  "_comment": "tsconfig extension for React packages. Adds jsx: react-jsx and DOM lib.",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+  }
+}

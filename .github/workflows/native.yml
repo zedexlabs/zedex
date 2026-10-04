@@ -1,0 +1,17 @@
+# Native helper build pipeline.
+# Cross-compiles capture-asr for macOS (universal) and Windows (x64 + arm64).
+# Uploads signed binaries as GitHub release assets and to Azure Blob.
+# Gate 2 — placeholder
+name: Native build
+on:
+  push:
+    paths: ['native/**']
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo 'Native build placeholder — implement at Gate 2'

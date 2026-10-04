@@ -1,0 +1,6 @@
+{
+  "_comment": "Service bootstrap library. Provides standard Fastify plugins used by every service: auth, authz, errors, idempotency, outbox/inbox, bus, telemetry, health, shutdown.",
+  "name": "@zedex/service-kit",
+  "private": true,
+  "version": "0.1.0"
+}

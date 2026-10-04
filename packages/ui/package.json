@@ -1,0 +1,6 @@
+{
+  "_comment": "Shared design system and React component library. Used by both web app and desktop app renderers. Presentation only — no credentials, no API calls.",
+  "name": "@zedex/ui",
+  "private": true,
+  "version": "0.1.0"
+}

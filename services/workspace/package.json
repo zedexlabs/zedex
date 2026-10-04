@@ -1,0 +1,6 @@
+{
+  "_comment": "Projects, meetings, notes, agendas, decisions, commitments, routing rules, tracking codes, saved views, audit, deletion saga. Gate 2.",
+  "name": "@zedex/workspace",
+  "private": true,
+  "version": "0.1.0"
+}

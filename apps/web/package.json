@@ -1,0 +1,6 @@
+{
+  "_comment": "Web app package — React 19 + Vite + TanStack Router. Gate 2+.",
+  "name": "@zedex/web",
+  "private": true,
+  "version": "0.1.0"
+}

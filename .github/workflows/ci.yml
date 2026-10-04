@@ -1,0 +1,15 @@
+# CI pipeline — runs on every PR and push to main.
+# Jobs: typecheck, lint, unit tests, contract tests.
+# Uses Turborepo remote cache (Azure Blob) to skip unchanged packages.
+# Gate 2 — placeholder
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo 'CI placeholder — implement at Gate 2'

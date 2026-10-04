@@ -1,0 +1,6 @@
+{
+  "_comment": "Global service. Users, sessions, workspaces, teams, roles, entitlements, billing (Stripe), cell directory. Gate 2.",
+  "name": "@zedex/account",
+  "private": true,
+  "version": "0.1.0"
+}

@@ -1,0 +1,6 @@
+{
+  "_comment": "AI utilities shared by intelligence and live services. Model gateway, prompt registry, structured output, evidence validation, token budgets.",
+  "name": "@zedex/ai-kit",
+  "private": true,
+  "version": "0.1.0"
+}

@@ -1,0 +1,14 @@
+# Desktop release pipeline.
+# Builds the Electron app for macOS (dmg, universal, notarized) and Windows (nsis, signed).
+# Publishes delta update manifests to Azure Blob. Triggered by version tags.
+# Gate 2 — placeholder
+name: Desktop release
+on:
+  push:
+    tags: ['v*']
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo 'Desktop release placeholder — implement at Gate 2'

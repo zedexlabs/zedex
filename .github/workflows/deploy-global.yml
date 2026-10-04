@@ -1,0 +1,16 @@
+# Global control plane deployment pipeline.
+# Deploys infra/azure/global via Bicep using GitHub OIDC (no stored credentials).
+# Triggered manually or on merge to main when global/ files change.
+# Gate 2 — placeholder
+name: Deploy global
+on:
+  workflow_dispatch:
+  push:
+    paths: ['infra/azure/global/**']
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo 'Global deploy placeholder — implement at Gate 2'

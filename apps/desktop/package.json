@@ -1,0 +1,6 @@
+{
+  "_comment": "Desktop app package — Electron + electron-vite. Gate 2+.",
+  "name": "@zedex/desktop",
+  "private": true,
+  "version": "0.1.0"
+}

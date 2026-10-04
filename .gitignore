@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build outputs
+dist/
+out/
+build/
+.turbo/
+
+# local env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# native
+native/capture-asr/build/
+*.o *.a *.so *.dylib *.dll
+
+# SQLite databases (local dev)
+*.db *.db-shm *.db-wal
+
+# Whisper models (large binaries, managed separately)
+resources/models/
+
+# test coverage
+coverage/

@@ -1,0 +1,6 @@
+{
+  "_comment": "Email (Azure Communication Services), Slack DM, in-app and desktop push, pre-meeting briefs, preference management. Gate 3.",
+  "name": "@zedex/notification",
+  "private": true,
+  "version": "0.1.0"
+}

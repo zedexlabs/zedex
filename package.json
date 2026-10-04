@@ -1,0 +1,14 @@
+{
+  "_comment": "Monorepo root. All build/test/lint scripts run via Turborepo across apps/*, services/*, packages/*.",
+  "name": "zedex",
+  "private": true,
+  "engines": { "node": ">=24", "pnpm": ">=9" },
+  "scripts": {
+    "build":     "turbo run build",
+    "test":      "turbo run test",
+    "lint":      "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "dev":       "turbo run dev --parallel",
+    "clean":     "turbo run clean"
+  }
+}

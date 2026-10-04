@@ -1,0 +1,6 @@
+{
+  "_comment": "Connector capability contract and test harness. All integration connectors (HubSpot, Linear, Slack, etc.) implement this interface.",
+  "name": "@zedex/connector-sdk",
+  "private": true,
+  "version": "0.1.0"
+}

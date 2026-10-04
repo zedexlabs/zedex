@@ -1,0 +1,6 @@
+# Electron Builder config.
+# macOS: universal dmg, hardened runtime, notarization via Apple credentials.
+# Windows: NSIS installer, Azure Artifact Signing, auto-update delta.
+# Gate 2 — placeholder
+appId: ai.zedex.app
+productName: Zedex

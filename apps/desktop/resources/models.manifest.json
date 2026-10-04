@@ -1,0 +1,4 @@
+{
+  "_comment": "Whisper model manifest. Lists available models with SHA-256 checksums and platform targets. Checked at startup to offer model updates.",
+  "models": []
+}

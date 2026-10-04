@@ -1,0 +1,35 @@
+# OpenFGA authorization model for Zedex.
+# Defines relationship tuples for: workspace, team, project, meeting, note, commitment.
+# Security invariant: association != access. Every read is authorized by a Check or BatchCheck.
+# Gate 2 — placeholder model
+
+model
+  schema 1.1
+
+type user
+
+type workspace
+  relations
+    define owner: [user]
+    define admin: [user] or owner
+    define member: [user] or admin
+
+type team
+  relations
+    define workspace: [workspace]
+    define lead: [user]
+    define member: [user] or lead
+
+type project
+  relations
+    define workspace: [workspace]
+    define owner: [user]
+    define contributor: [user] or owner
+    define viewer: [user] or contributor
+
+type meeting
+  relations
+    define workspace: [workspace]
+    define owner: [user]
+    define attendee: [user]
+    define viewer: [user] or attendee or owner

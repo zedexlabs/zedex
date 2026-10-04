@@ -1,0 +1,6 @@
+{
+  "_comment": "Pure domain rules. No database, HTTP, Electron, or cloud SDK imports allowed. Depends on contracts only.",
+  "name": "@zedex/domain",
+  "private": true,
+  "version": "0.1.0"
+}

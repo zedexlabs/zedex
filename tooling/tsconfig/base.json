@@ -1,0 +1,3 @@
+{
+  "_comment": "Shared tsconfig base for all packages. Extends tsconfig.base.json at the monorepo root with stricter library-specific settings."
+}

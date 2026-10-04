@@ -1,0 +1,6 @@
+{
+  "_comment": "Calendar sync (Google + Microsoft), connector adapters, OAuth token vault, outbound webhook delivery, rate-limited egress. Gate 2.",
+  "name": "@zedex/integration",
+  "private": true,
+  "version": "0.1.0"
+}

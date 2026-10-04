@@ -1,0 +1,6 @@
+{
+  "_comment": "Summaries, decision/commitment proposals, agenda drafts, catch-up briefs, embeddings, AI Search indexing, keyword alerts, chat/search API. Gate 3.",
+  "name": "@zedex/intelligence",
+  "private": true,
+  "version": "0.1.0"
+}

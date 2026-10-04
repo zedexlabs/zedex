@@ -1,0 +1,20 @@
+# Cell deployment pipeline.
+# Deploys a named cell stamp via infra/azure/cell using Bicep + OIDC.
+# Accepts cellName and environment as inputs. Can deploy to dev, staging, or prod.
+# Gate 2 — placeholder
+name: Deploy cell
+on:
+  workflow_dispatch:
+    inputs:
+      cellName:
+        description: 'Cell name (e.g. prod-us1)'
+        required: true
+      env:
+        description: 'Environment (dev | staging | prod)'
+        required: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo 'Cell deploy placeholder — implement at Gate 2'

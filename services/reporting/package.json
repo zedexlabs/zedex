@@ -1,0 +1,6 @@
+{
+  "_comment": "Exports (Markdown/PDF/JSON), weekly and executive reports, tracking-code attribution read models, analytics queries. Gate 3.",
+  "name": "@zedex/reporting",
+  "private": true,
+  "version": "0.1.0"
+}

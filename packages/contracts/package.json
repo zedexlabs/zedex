@@ -1,0 +1,6 @@
+{
+  "_comment": "Shared contract schemas (Zod). HTTP, events, commands, IPC, helper protocol, workflow nodes. Generates OpenAPI and AsyncAPI at build time. Depends on nothing from apps or services.",
+  "name": "@zedex/contracts",
+  "private": true,
+  "version": "0.1.0"
+}

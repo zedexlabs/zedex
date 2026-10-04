@@ -1,0 +1,6 @@
+# pnpm workspace definition — lists all packages included in the monorepo.
+packages:
+  - "apps/*"
+  - "services/*"
+  - "packages/*"
+  - "tooling/*"

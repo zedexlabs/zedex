@@ -1,0 +1,6 @@
+{
+  "_comment": "Desktop transcript sync. Receives capture batches, handles revisions, finalises transcripts. Sharded Postgres (Citus) by workspace_id. Gate 2.",
+  "name": "@zedex/ingest",
+  "private": true,
+  "version": "0.1.0"
+}

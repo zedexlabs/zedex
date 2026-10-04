@@ -1,0 +1,22 @@
+{
+  "_comment": "Base TypeScript config — strict ESM, path aliases for all @zedex/* packages. Extended by every package.",
+  "compilerOptions": {
+    "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "paths": {
+      "@zedex/contracts/*": ["./packages/contracts/src/*"],
+      "@zedex/domain/*":    ["./packages/domain/src/*"],
+      "@zedex/service-kit/*": ["./packages/service-kit/src/*"],
+      "@zedex/ai-kit/*":    ["./packages/ai-kit/src/*"],
+      "@zedex/ui/*":        ["./packages/ui/src/*"]
+    }
+  }
+}

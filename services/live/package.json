@@ -1,0 +1,6 @@
+{
+  "_comment": "Low-latency in-meeting tick suggestions and new-commitment hints. Stateless; uses Redis for budget and short context cache. Gate 3.",
+  "name": "@zedex/live",
+  "private": true,
+  "version": "0.1.0"
+}

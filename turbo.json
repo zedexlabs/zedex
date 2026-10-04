@@ -1,0 +1,11 @@
+{
+  "_comment": "Turborepo pipeline. Defines task dependency graph and remote-cache settings.",
+  "": "https://turbo.build/schema.json",
+  "tasks": {
+    "build":     { "dependsOn": ["^build"], "outputs": ["dist/**"] },
+    "test":      { "dependsOn": ["^build"] },
+    "lint":      { "dependsOn": ["^build"] },
+    "typecheck": { "dependsOn": ["^build"] },
+    "dev":       { "persistent": true }
+  }
+}

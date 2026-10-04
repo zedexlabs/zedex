@@ -1,0 +1,5 @@
+{
+  "_comment": "CMake presets for macOS (arm64, x64, universal) and Windows (x64, arm64) build configurations.",
+  "version": 6,
+  "configurePresets": []
+}

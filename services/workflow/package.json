@@ -1,0 +1,6 @@
+{
+  "_comment": "Workflow DAG definitions, run engine, step ledger, approval queue, uncertain-write reconciliation, schedule, template gallery. Gate 4.",
+  "name": "@zedex/workflow",
+  "private": true,
+  "version": "0.1.0"
+}
