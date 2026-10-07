@@ -35,13 +35,30 @@ Each service owns one logical database. No cross-service joins; services hold fo
 
 ## ingest (cell, sharded by workspace_id)
 
-`capture` (meeting, device owner, sources), `source` (microphone | meeting_audio), `segment` (client ID, sequence, start/end, text, source), `segment_revision` (append-only; reason), `sync_batch` (idempotency key, request hash, ack state), `gap` (interval, reason), `finalization`, `outbox`, `inbox`.
+`capture` (meeting, device owner, sources), `source` (microphone | meeting_audio), `segment` (client ID, sequence, start/end, text, source, **kind** [transcript | user_note], **word_confidence** [JSON word-level scores from STT provider]), `segment_revision` (append-only; reason), `sync_batch` (idempotency key, request hash, ack state), `gap` (interval, reason), `finalization`, `speech_session` (short-lived STT provider token; workspace policy and consent checked before issue), `outbox`, `inbox`.
+
+**Segment kinds:**
+- `transcript` — finalized STT output. Word-level confidence scores stored; words below threshold are flagged `unverified`.
+- `user_note` — typed by the user during the meeting; always considered authoritative.
 
 Retention follows workspace policy (default 12 months). Several captures for one meeting stay separate. A complete authorized source is selected for downstream use; duplicates are never auto-concatenated, and private content never merges into shared material.
 
 ## integration (cell)
 
 `connection` (provider, scopes, health, owner), `token` (encrypted, Key Vault key reference), `calendar_account`, `calendar_subscription` (cursor, expiry), `calendar_event` (provider ID, recurrence, conferencing link, attendees), `external_ref` (internal ID ↔ provider ID), `operation_attempt` (payload hash, outcome), `webhook_event` (signature verified), `provider_transcript_import`, `outbox`, `inbox`.
+
+## workspace additions for Phase 1
+
+Added to `workspace`:
+- `chunk_note` (capture_id, window_start, window_end, content JSON, flagged_values JSON, source_segment_ids, created_at) — built continuously during the meeting every ~5 min.
+- `meeting_card` (meeting_id, source_revision, chunk_note_ids, content JSON, flagged_values JSON, model/prompt version, created_at, invalidated_at) — built from chunk notes after finalization.
+- `summary_preference` (owner_id, name, style, length, focus, date_range?, project_id?, meeting_ids?, created_at) — saved summary preferences.
+- `agenda_item` gains columns: `previous_meeting_ref` (link to the previous meeting's item), `section` (previous | current | next).
+
+**Agenda item sections:**
+- `previous` — carried from the prior meeting in the series; read-only in the current meeting.
+- `current` — items for this meeting; editable before and during.
+- `next` — planned items for the next meeting; editable at any time.
 
 ## intelligence (cell)
 

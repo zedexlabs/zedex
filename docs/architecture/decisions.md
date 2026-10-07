@@ -127,13 +127,15 @@ Format: context → decision → consequences → revisit trigger. Status of all
 
 **Why.** Crash isolation, real-time audio handling, and no FFI into the ASR engines.
 
-## ADR-012 Local ASR
+## ADR-012 Local ASR *(superseded by ADR-023)*
 
 **Decision.**
 - whisper.cpp (Metal on Apple Silicon) with built-in Silero VAD and quantized `small.en`/`base.en`.
 - Parakeet-TDT 0.6B via sherpa-onnx is benchmarked behind the same `transcriber.h` interface.
 - The choice per target is made from Gate 1 measurements.
 - Models are verified by checksum before load.
+
+**Superseded.** ADR-023 replaces local ASR with cloud STT as the default. The `transcriber.h` interface is retained. A local engine may return as an enterprise privacy mode in a future ADR.
 
 ## ADR-013 Local store
 
@@ -199,3 +201,102 @@ Format: context → decision → consequences → revisit trigger. Status of all
 ## ADR-022 Billing
 
 **Decision.** Stripe per-seat subscriptions from paid pilots (Gate 4), with usage metering for model-heavy features.
+
+---
+
+## ADR-023 Cloud speech-to-text (supersedes ADR-012)
+
+**Context.** ADR-012 chose local ASR (whisper.cpp + Parakeet-TDT). Founder review: online meetings do not need offline capability; a local model costs CPU, battery, and ~80–300 MB of installer size; cloud STT accuracy on names and numbers is better and continuously improving; Granola ships with cloud transcription and it is commercially viable.
+
+**Decision.**
+- The native helper streams the mic ("You") and system-audio ("Others") channels separately over WebSocket directly to the cloud STT provider. Audio never passes through Zedex servers and is never stored or retained by Zedex.
+- The helper obtains a **short-lived provider session token** from `ingest` (`POST /speech-sessions`), which enforces policy, consent, and per-workspace budget before issuing. Provider keys never reach client devices.
+- Network blips: the helper keeps ≤ 30 s of audio in a RAM ring buffer, reconnects, and resends on reconnect. Outages longer than 30 s are recorded as capture gaps and shown to the user.
+- The `transcriber.h` interface is retained so a local engine (enterprise privacy mode, offline fallback) can be added later without protocol changes.
+- Provider chosen from the Gate 1 benchmark. Candidates: **AssemblyAI Universal-Streaming** ($0.15/h, +$0.12/h speaker separation), **Deepgram Nova-3** (~$0.46/h). Estimated $3–5 per user/month at 20 meeting-hours.
+- Requirements for any selected provider: zero audio retention, a signed DPA, and an EU data-processing region for Gate 6.
+- Keyterm prompting supplies project vocabulary (customer names, product names) to reduce misrecognitions.
+
+**Consequences.**
+- Installer no longer bundles a model (drops ~80–300 MB).
+- A provider outage degrades transcription; the helper must report gap state clearly.
+- Cost scales with usage; per-workspace budget enforcement is mandatory.
+- A second provider must be benchmarked as a failover.
+
+**Revisit.** Add local engine as admin-configurable privacy mode if a paying enterprise customer requires it, or if provider costs exceed $8/user/month at average usage.
+
+## ADR-024 Value verification (amends ADR-020)
+
+**Context.** Cloud STT occasionally mishears numbers, dates, money amounts, and proper names. Commitments and decisions built on wrong values damage trust.
+
+**Decision.**
+- The STT provider returns word-level confidence scores. Segments store these at the word level.
+- The intelligence pipeline flags words below a configurable threshold (`unverified`) in summaries, agendas, and commitment proposals when they match the patterns: numbers, currency, dates, durations, proper nouns.
+- A flagged value is displayed with a visual indicator. The user must explicitly verify or correct it before the item is treated as confirmed.
+- The user's typed notes (ADR-026) serve as a second-witness signal; if the user typed the same number, confidence in the transcribed value rises.
+- Local audio clips as evidence remain in the backlog for a later opt-in phase; they are not part of Phase 1.
+
+**Consequences.** Users see slightly more friction on ambiguous values, but trust in confirmed commitments is higher.
+
+## ADR-025 Web-first product and thin desktop shell (amends ADR-010, ADR-016, ADR-019)
+
+**Context.** Frequent web-app releases for early testers become painful if each requires a desktop-app update. Most Zedex UI is not desktop-specific.
+
+**Decision.**
+- All application UI lives in the **web app**, deployed continuously.
+- The desktop shell (`apps/desktop`) loads the remote web app origin inside a locked-down `BrowserView` / `WebContentsView`. It does not bundle the web app.
+- Shell hardening: `sandbox: true`, `contextIsolation: true`, no `nodeIntegration` in content, a strict origin allowlist and CSP, a narrow preload API that exposes only: capture start/stop, popup show/hide, overlay show/hide, and desktop health status.
+- Native capture helper (`native/capture-asr`) continues to run as a separate C++ child process; it is the only reason to install the desktop app.
+- Shell and helper releases are rare, signed, and staged (electron-updater). Web UI changes require no new installer.
+- No Chrome extension. Capture runs in the native process, which Chrome cannot throttle.
+
+**Consequences.**
+- The installer shrinks significantly (no bundled model, no bundled web app).
+- Desktop requires network access to function as a full product; the capture helper works offline and buffers locally.
+- UI testing shifts almost entirely to web. Desktop-specific test surface covers only IPC, capture, and shell security.
+
+## ADR-026 Typed notes steer summaries
+
+**Decision.**
+- User keystrokes during a meeting are timestamped segments with `kind = user_note`.
+- The intelligence pipeline preserves the user's own headings, bullets, and order in the meeting card and summary. AI-generated text fills gaps around them.
+- User text and AI text are visually distinct in every rendered view.
+- Every AI-generated sentence links to at least one transcript segment as evidence.
+
+**Consequences.** Users who write even a few notes get a much more accurate summary with lower chance of hallucinated structure.
+
+## ADR-027 Layered summarisation for long transcripts and rollups
+
+**Context.** A 2-hour meeting is ~18–20 k words (~25–30 k tokens). While this fits a single LLM call, quality degrades in the middle of very long input, regeneration cost repeats on every revision, latency grows, and multi-meeting rollups (project summaries, period summaries) do not fit at all without chunking.
+
+**Decision.** Three-tier pipeline:
+
+1. **Chunk notes** — built continuously as the meeting runs: every ~5 minutes of finalized transcript (with overlap) is condensed into a small structured chunk (key points, open questions, flagged values). The user's typed notes in that window are merged in.
+2. **Meeting card** — structured topics, decisions, open questions, next steps, and flagged values, each with segment-level evidence references. Built from all chunk notes, the user's notes, and the accepted agenda. This is the canonical record of one meeting.
+3. **Rollups** — project summaries, date-range digests, and multi-meeting briefs are built only from meeting cards, never from raw transcripts.
+4. **Evidence retrieval** — when an exact transcript quote is needed (citation, evidence panel), the relevant segment is fetched by ID.
+
+- Short meetings (≤ ~40 k tokens) may use a single-pass meeting-card path; the pipeline chooses by evaluation.
+- When a transcript revision arrives (correction, late segment), only the affected chunks are rebuilt; downstream cards and rollups are invalidated and queued for rebuild.
+- Prompt caching applies to the system prompt and shared context.
+- Per-workspace token budget is enforced at the meeting-card pipeline; rollups are rate-limited by tier.
+
+**Consequences.**
+- Rollup quality is bounded by meeting-card quality; chunk accuracy matters.
+- Rebuilding a meeting card after a revision is cheap (only affected chunks re-run).
+- Raw transcripts are never sent to the model in bulk; search and evidence use segment IDs.
+
+## ADR-028 Stay on Azure; Service Bus Standard for Phase 1 (amends ADR-003, ADR-009)
+
+**Context.** GCP was evaluated as an alternative to Azure. The key question was whether Service Bus Premium (~$700/month per namespace unit) made Azure uneconomical. It does not: **Service Bus Standard** costs ~$0.0135/h base and is appropriate for Phase 1 volumes. Premium is justified only by network isolation or high-throughput needs that do not exist in Phase 1. A full GCP migration would cost weeks of re-platforming with no product progress and would complicate Windows code-signing (Azure Artifact Signing is native).
+
+**Decision.**
+- Azure is retained as the cloud platform.
+- Phase 1 uses **Azure Service Bus Standard** tier. Upgrade to Premium only when load tests or network-isolation requirements demand it.
+- **Azure Container Apps** on the consumption (scale-to-zero) plan; promote to dedicated when a service has sustained baseline load.
+- One **Azure Database for PostgreSQL Flexible Server** per cell with a logical database per service; separate servers when a service's CPU or IO budget is exceeded.
+- No Azure Cache for Redis and no Azure AI Search in Phase 1; Postgres full-text search and pgvector serve search until Phase 2.
+- **Azure OpenAI** for text models. Google Gemini and Google ADK are not used.
+- GCP can be revisited for specific services if a compelling technical reason emerges, but a mixed-cloud architecture requires its own ADR.
+
+**Consequences.** Phase 1 cell cost is ~$30–50/month base; scales with usage. No re-platforming cost.

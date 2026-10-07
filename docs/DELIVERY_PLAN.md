@@ -15,24 +15,28 @@ Cycles are about two weeks and indicative; they depend on team size. A gate pass
 
 **Scope**
 - 15 buyer interviews and 5 design-partner journeys using the [discovery kit](PRODUCT_WORKFLOWS.md#gate-1-discovery-kit).
-- Four-target capture and ASR benchmark (whisper.cpp vs Parakeet via sherpa-onnx).
+- Cloud STT provider benchmark (AssemblyAI vs Deepgram): accuracy on names and numbers, latency, cost, failover.
 - Popup and overlay: screen-share protection matrix and meeting-detection spike.
-- Consent and legal review started.
-- Load model and Azure cost baseline.
+- Consent and legal review started. Google Workspace API verification started.
+- Azure cost baseline with pricing calculator.
 
-**Exit:** measured hardware support, partner commitments, and an approved cost baseline.
+**Exit:** measured hardware support, partner commitments, approved cost baseline, STT provider chosen.
 
-## Gate 2 — Foundation (cycles 4–9)
+## Gate 2 — Foundation / Phase 1 (cycles 4–9)
 
 **Scope**
 - Repository, CI/CD, global and cell infrastructure as code, `service-kit`, contracts.
-- Services: `account`, `workspace`, `ingest`, `integration` (Google/Microsoft calendars), `authz`.
-- Service Bus with outbox/inbox, Web PubSub.
-- Desktop shell, **meeting popup**, capture, encrypted store, durable sync.
-- **Projects with drag-and-drop grouping**, series auto-add, rules and tracking-code detection.
-- Manual agenda and the **live overlay**; consent basics; RLS and audit.
+- Services: `account`, `workspace`, `ingest` (with `speech-sessions`), `integration` (Google/Microsoft calendars), `authz`.
+- Service Bus Standard with outbox/inbox, Web PubSub.
+- Desktop thin shell loading remote web app; meeting popup; native capture helper (cloud STT streaming); encrypted store; durable sync.
+- Web app: sign-in, onboarding, all Phase 1 surfaces (see [PHASE_1_PLAN.md](PHASE_1_PLAN.md)).
+- **Projects** with drag-and-drop grouping, series auto-add, rules, and tracking-code detection.
+- **Agenda** (previous meeting / this meeting / next-meeting plan) — drafted by AI, accepted by humans.
+- **Preference summaries** — on request, from meeting cards, for chosen dates/projects/styles.
+- **Typed notes** during the meeting that steer the AI summary.
+- Consent basics; RLS and audit.
 
-**Exit:** offline restart, idempotency, tenant isolation, and revocation tests pass; the first cell is live; founders dogfood their own meetings.
+**Exit:** founders dogfood their own meetings across Zoom, Teams, and Meet on macOS and Windows; offline restart, idempotency, tenant isolation, and revocation tests pass; first cell live.
 
 ## Gate 3 — Meeting intelligence (cycles 10–15)
 

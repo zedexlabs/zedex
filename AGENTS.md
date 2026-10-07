@@ -25,10 +25,8 @@ Zedex is a production product delivered in feature cycles, not an MVP. Every inc
 - **Correct under failure:** idempotency keys on every write, transactional outbox for events, inbox dedupe for consumers, timeouts plus jittered retries plus circuit breakers on remote calls. Never hold a database transaction across a network or model call.
 - **Secure by default:** authenticate every request; authorize through OpenFGA plus workspace RLS; validate all input; least-privilege scopes and identities; secrets only in Key Vault. Transcripts, imports, webhooks, and model output are untrusted input.
 - **Privacy invariants:**
-  - Never persist or upload raw meeting audio.
+  - Speech-to-text runs on a contracted streaming cloud provider with zero retention; Zedex never stores meeting audio, never uploads audio files, never records, and never joins as a bot. Uncertain values require human verification.
   - Never record video.
-  - Never invoke paid ASR.
-  - No meeting bot.
   - No training on customer data.
   - Logs and telemetry carry identifiers, never content.
 - **Human control:** AI suggests. Humans tick agenda items, confirm commitments, close items, and approve every external write with its exact payload.

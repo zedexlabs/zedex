@@ -18,6 +18,7 @@
 | Service → service | Managed identity, private networking, per-service database credentials |
 | Cell → providers | Minimal OAuth scopes, encrypted tokens, signature-checked webhooks, egress budgets |
 | Cell → models | Text only, authorized sources only, no training on customer data |
+| Device → STT provider | Audio stream only (never via Zedex servers); short-lived token issued by `ingest`; zero-retention DPA required; provider key never on device |
 
 ## Threat model highlights
 

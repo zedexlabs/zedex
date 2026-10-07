@@ -28,4 +28,4 @@ Meeting memory, live agendas, commitment tracking, and approved workflow automat
 
 The architecture describes intended future files. Files are created only when their gate needs them; the plan is not a request to generate empty scaffolding.
 
-Free open-source ASR runs locally. Raw meeting audio is never intentionally persisted or uploaded. Azure receives text and metadata. Paid cloud text models are allowed; paid ASR is prohibited.
+Speech-to-text runs on a contracted streaming cloud provider with zero retention; Zedex never stores meeting audio, never uploads audio files, never records, and never joins as a bot. Uncertain values require human verification.

@@ -80,10 +80,9 @@ These are product commitments to customers, not implementation details:
 
 | Invariant | Description |
 |---|---|
-| No stored audio | Raw meeting audio is never written to disk beyond the capture buffer. Never uploaded. |
-| No paid ASR | All speech recognition runs locally on the user's device with open-source models. |
+| Cloud STT, zero retention | Speech-to-text runs on a contracted streaming cloud provider with zero retention; Zedex never stores meeting audio, never uploads audio files, never records, and never joins as a bot. Uncertain values require human verification. |
+| No recording | Zedex does not record audio or video. |
 | No meeting bot | Zedex never joins a meeting as a participant. |
-| No recording | Zedex does not record audio or video. It transcribes locally in real time. |
 | No training | Customer data is never used to train models. Azure OpenAI data processing terms apply. |
 | Logs carry IDs, not content | No transcript text, note text, or commitment text appears in any log, trace, or metric. |
 | Humans approve external writes | No data is written to an external system (Linear, HubSpot, Google Docs, Slack) without the user seeing the exact payload and clicking Approve. |

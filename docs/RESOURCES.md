@@ -27,13 +27,22 @@ Official or primary sources by topic. Recheck each at implementation and record 
 | SQLite3 Multiple Ciphers | https://utelle.github.io/SQLite3MultipleCiphers/ |
 | better-sqlite3-multiple-ciphers | https://github.com/m4heshd/better-sqlite3-multiple-ciphers |
 
-## Speech recognition
+## Speech-to-text (cloud providers — Gate 1 benchmark)
+
+| Topic | Link |
+|---|---|
+| AssemblyAI Universal-Streaming ($0.15/h; +$0.12/h speaker separation) | https://www.assemblyai.com/docs/speech-to-text/streaming |
+| AssemblyAI pricing | https://www.assemblyai.com/pricing |
+| AssemblyAI keyterm prompting | https://www.assemblyai.com/docs/speech-to-text/key-phrases |
+| Deepgram Nova-3 (~$0.46/h streaming) | https://developers.deepgram.com/docs/streaming |
+| Deepgram pricing | https://deepgram.com/pricing |
+| Deepgram keywords / keyterm prompting | https://developers.deepgram.com/docs/keywords |
+
+## Speech recognition (local — retained for reference; enterprise privacy mode backlog)
 
 | Topic | Link |
 |---|---|
 | whisper.cpp | https://github.com/ggml-org/whisper.cpp |
-| whisper.cpp streaming example | https://github.com/ggml-org/whisper.cpp/tree/master/examples/stream |
-| Whisper model card and license | https://github.com/openai/whisper/blob/main/model-card.md · https://github.com/openai/whisper#license |
 | sherpa-onnx | https://github.com/k2-fsa/sherpa-onnx |
 | Parakeet-TDT 0.6B v3 (CC-BY-4.0) | https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3 |
 

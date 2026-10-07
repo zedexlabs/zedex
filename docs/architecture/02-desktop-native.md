@@ -70,23 +70,24 @@ There is one package per architecture, each with a matching helper build. A succ
 - **Events:** `ready`, `started`, `levels`, `partial`, `final`, `deviceChanged`, `permissionChanged`, `micActivity`, `overload`, `gap`, `stopped`, `failure`.
 - Audio never crosses the protocol.
 
-## Capture and ASR pipeline
+## Capture and STT pipeline
 
-`PCM capture → mono + resample 16 kHz → Silero VAD → bounded windows → ASR → overlap reconciliation → stable final segments`
+`PCM capture → mono + resample 16 kHz → Silero VAD → bounded windows → cloud STT WebSocket stream → text segments`
 
 | Concern | Rule |
 |---|---|
 | Sources | Microphone and meeting audio kept separate; labelled "You" and "Others" |
 | macOS | Core Audio process taps for meeting audio + microphone input |
 | Windows | WASAPI microphone + output loopback; per-application loopback is qualified separately |
-| Memory bound | ≤ 60 s of audio per source across queues; samples released promptly |
-| Persistence | No WAV, cache, diagnostic, or retry audio — ever |
+| Memory bound | ≤ 30 s RAM ring buffer per source for reconnect; no disk audio, ever |
+| Persistence | No WAV, cache, diagnostic, or retry audio — audio is never written to disk or uploaded to Zedex servers |
+| Cloud STT | Mic and Others streams sent separately to the STT provider WebSocket. Helper obtains a short-lived session token from `ingest` (`POST /speech-sessions`). Provider keys never reach devices. |
+| Reconnect | On a drop, helper resends from the ring buffer. Gaps longer than the buffer size are recorded and shown to the user. |
 | Overload | Explicit pause or drop with a reported gap |
 | Failure | Finalized text is preserved and lost intervals are marked |
-| Engines | whisper.cpp `small.en` / `base.en`; Parakeet-TDT via sherpa-onnx benchmarked |
-| Models | Manifest with engine revision, quantization, SHA-256, size, license, platforms; verified before load |
+| Interface | `transcriber.h` interface retained; local engine can be added later as enterprise privacy mode |
 
-**Speaker attribution:** "You" comes from the mic channel and "Others" from meeting audio. Remote names come from calendar attendees plus user confirmation. Owners are never inferred from uncertain labels. On-device diarization ships only if Gate 1 benchmarks pass.
+**Speaker attribution:** "You" comes from the mic channel and "Others" from meeting audio. Remote names come from calendar attendees plus user confirmation. Owners are never inferred from uncertain labels.
 
 ## Local storage
 
@@ -108,9 +109,10 @@ There is one package per architecture, each with a matching helper build. A succ
 ## Updates and distribution
 
 - electron-updater uses staged rollouts from signed feeds.
-- Model files download separately and are verified against the manifest.
+- No model files are bundled or downloaded (cloud STT). Installer is ~80–100 MB (down from ~300 MB with a bundled model).
 - macOS is signed with Developer ID and notarized; Windows is signed with Azure Artifact Signing.
 - Update interruption and rollback are tested before each release.
+- UI ships through web deploys; the shell and helper update rarely.
 
 ## Performance budgets (to qualify)
 

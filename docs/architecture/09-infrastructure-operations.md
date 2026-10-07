@@ -23,10 +23,11 @@
 |---|---|
 | Services (9) | Container Apps environment with workload profiles |
 | Databases | PostgreSQL Flexible Server (one server, separate logical databases per service at first; `ingest` on an elastic cluster) |
-| Messaging | Service Bus Premium |
+| Messaging | Service Bus **Standard** (Phase 1); Premium when load or network isolation requires it (~$700/month per unit) |
 | Realtime | Web PubSub |
-| Cache and budgets | Azure Managed Redis |
-| Retrieval | Azure AI Search |
+| Cache and budgets | Azure Managed Redis (Phase 2+; not in Phase 1) |
+| Retrieval | Azure AI Search (Phase 2+; Phase 1 uses Postgres FTS + pgvector) |
+| STT | Cloud provider (AssemblyAI or Deepgram); tokens issued by `ingest`; ~$3–5/user/month at 20 hr/month |
 | Models | Azure OpenAI deployments: summary, chat, live, embeddings |
 | Authorization | OpenFGA on Container Apps with its own PostgreSQL database |
 | Storage | Blob (private exports, 7-day expiry) |

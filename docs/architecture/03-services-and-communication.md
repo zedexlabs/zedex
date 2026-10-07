@@ -15,7 +15,7 @@
 |---|---|---|---|---|
 | `account` | Global | Users, identities, sessions, workspaces, teams, memberships, roles, invitations, entitlements, feature flags, subscriptions, usage, cell directory | HTTP | 2 |
 | `workspace` | Cell | Projects/folders, accounts, people/companies, series, meetings, associations, shares, notes, agendas, contributions, ticks, highlights, decisions, commitments, routing rules, tracking codes, saved views, coverage, consent notices, audit, deletion saga | HTTP | 2 |
-| `ingest` | Cell | Captures, sources, transcript segments and revisions, sync batches, gaps, finalization | HTTP, write volume | 2 |
+| `ingest` | Cell | Captures, sources, transcript segments and revisions, sync batches, gaps, finalization; STT session tokens (`POST /speech-sessions` — checks policy, consent, budget, issues short-lived provider token) | HTTP, write volume | 2 |
 | `integration` | Cell | Connections, encrypted tokens, calendar subscriptions/cursors/events, external refs, operation attempts, inbound webhooks, provider transcript imports | Queue depth | 2 |
 | `authz` | Cell | OpenFGA store and model | Checks/s | 2 |
 | `intelligence` | Cell | Summaries, proposals, briefs, catch-ups, agenda drafts, alert rules/matches, chat threads, index state, prompt-run metadata | Queue depth, model quota | 3 |

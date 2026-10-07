@@ -18,9 +18,14 @@ Planning and Markdown documentation only. Application development, package insta
 ## Documentation delivered
 
 - [ARCHITECTURE.md](../ARCHITECTURE.md): product, invariants, service map, document index, requirement traceability.
-- [docs/architecture/](architecture/): overview, desktop and native, services and communication, data model, intelligence, integrations, workflows and canvas, security and privacy, infrastructure and operations, repository structure, quality and testing, and the ADR log (cell-based, event-driven services).
-- [DELIVERY_PLAN.md](DELIVERY_PLAN.md), [PRODUCT_WORKFLOWS.md](PRODUCT_WORKFLOWS.md) with the Gate 1 discovery kit, [MARKET_RESEARCH.md](MARKET_RESEARCH.md) with the Granola and Fathom parity matrix, [RESOURCES.md](RESOURCES.md).
+- [docs/architecture/](architecture/): overview, desktop and native, services and communication, data model, intelligence, integrations, workflows and canvas, security and privacy, infrastructure and operations, repository structure, quality and testing, and the ADR log (ADR-001 through ADR-028).
+- [DELIVERY_PLAN.md](DELIVERY_PLAN.md), [PRODUCT_WORKFLOWS.md](PRODUCT_WORKFLOWS.md), [MARKET_RESEARCH.md](MARKET_RESEARCH.md), [RESOURCES.md](RESOURCES.md).
+- [PHASE_1_PLAN.md](PHASE_1_PLAN.md): Phase 1 scope, user flows, services, milestones, exit criteria.
+- [TECHNICAL_RISKS.md](TECHNICAL_RISKS.md): full technical risk register for every feature, by phase.
 - [AGENTS.md](../AGENTS.md) with the production standard and Definition of Done; [CLAUDE.md](../CLAUDE.md).
+- [ZEDEX_BRIEFING.md](ZEDEX_BRIEFING.md): complete project briefing updated to reflect Phase 1 decisions (cloud STT, web-first, Azure, ADR-023–028).
+
+**Plan revision applied (October 2026):** ADR-023 through ADR-028 added. Cloud STT replaces local ASR as default (ADR-012 superseded). Web-first with thin desktop shell (ADR-025). Layered summarisation (ADR-027). Azure Service Bus Standard for Phase 1 (ADR-028). Phase 1 feature set confirmed: calendar integration, Projects, agenda (previous/current/next), preference summaries, typed notes.
 
 Supersedes the earlier modular-monolith plan (ADR-001).
 
@@ -32,7 +37,7 @@ Supersedes the earlier modular-monolith plan (ADR-001).
 
 | Gate | Status | Evidence still needed |
 |---|---|---|
-| 1 — Validate and qualify | Planned | Buyer interviews, partner journeys, four-target capture/ASR measurements, screen-share protection and detection matrices, legal/consent review, cost baseline |
+| 1 — Validate and qualify | Planned | Buyer interviews, partner journeys, cloud STT provider benchmark (AssemblyAI vs Deepgram), screen-share protection and detection matrices, legal/consent review, Google Workspace API verification started, Azure cost baseline |
 | 2 — Foundation | Planned | Implementation; PostgreSQL, RLS, OpenFGA, sync, and contract tests; calendar and identity qualification |
 | 3 — Meeting intelligence | Planned | Implementation; grounding, invalidation, live-precision evaluations; burst load test |
 | 4 — Execution loop | Planned | Implementation; approval, retry, reconciliation tests; live connector qualification |

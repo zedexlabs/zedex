@@ -33,8 +33,39 @@ Each deployment has its own version, region, quota, timeouts, and fallback. Prov
 
 ## Pipelines
 
-### Summary and proposals
-`transcript.finalized` → coverage check → select authorized complete source → transcript + notes + template → structured draft (summary, decisions, commitments, questions, blockers) → evidence validation → store as proposals → `proposals.ready` → human confirmation in `workspace` → eligible for index and workflows.
+### Chunk notes (runs during the meeting)
+
+For every ~5 minutes of finalized transcript segments (with overlap to preserve cross-boundary context):
+1. Condense to a small structured chunk: key points, open questions, flagged values (`unverified` words below confidence threshold).
+2. Merge in user's typed notes (`kind = user_note`) from the same window.
+3. Store as `chunk_note` linked to the capture and meeting.
+4. When a transcript revision arrives, rebuild only the affected chunks; invalidate downstream cards.
+
+### Meeting card (built after meeting ends)
+
+`transcript.finalized` → select all chunk notes + user notes + accepted agenda → structured meeting card (topics, decisions, open questions, next steps, flagged values, each with segment evidence) → evidence validation → store as the canonical record → `meeting_card.ready` → human review and confirmation in `workspace`.
+
+**Invariants:**
+- Raw transcripts are never sent to the model in bulk; chunk notes are the intermediary.
+- Every item in the meeting card cites a chunk note and a segment ID.
+- Flagged values (`unverified`) carry through from chunks; user must verify before confirming.
+- Meeting card is rebuilt when any of its source chunks are rebuilt.
+
+### Preference summaries (on request)
+
+`summaries.requested(preference_set)` → resolve meeting cards in scope (authorization-filtered by OpenFGA) → build rollup from meeting cards only → return structured summary matching the saved preference (style, length, focus, date range, project).
+
+**Invariants:**
+- Rollups are never built from raw transcripts.
+- A rollup covers only meetings the requesting user can access; verified by OpenFGA ListObjects before any meeting card is fetched.
+- Rollups are rebuilt automatically when a source meeting card changes (if on a user schedule).
+
+### Typed notes steer summaries (ADR-026)
+
+User notes (`kind = user_note`) are timestamped segments. The chunk-note pipeline merges them at their natural position. The meeting card preserves the user's headings and order. User text and AI text are visually distinct in every rendered view. Every AI sentence links to at least one transcript segment.
+
+### Summary and proposals (Phase 1: meeting card pipeline above; Gate 3: full pipeline)
+`transcript.finalized` → coverage check → select authorized complete source → chunk notes + user notes + template → structured draft (summary, decisions, commitments, questions, blockers) → evidence validation → store as proposals → `proposals.ready` → human confirmation in `workspace` → eligible for index and workflows.
 
 Do not summarize summaries recursively. Continuity comes from confirmed decisions, commitments, open questions, external references, and verified closures.
 

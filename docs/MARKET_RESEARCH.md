@@ -27,7 +27,7 @@ Research date: 3 October 2026. This is a sample of public pages, reviews, and co
 
 | Product | Capture | Strengths | Gaps relevant to Zedex |
 |---|---|---|---|
-| Granola | Bot-free desktop + mobile | Notes + transcript blend, briefs, chat, spaces/folders, MCP, API | No export; manual CRM/Slack sharing; no agenda or commitment tracking |
+| Granola | Bot-free desktop app; cloud transcription (not local model); web viewer shows summaries only; iOS app; team Spaces | Notes + transcript blend, briefs, chat, spaces/folders, MCP, API | No export; manual CRM/Slack sharing; no agenda or commitment tracking |
 | Fathom | Bot and bot-free (3.0), video recording | Ask Fathom, scorecards, CRM sync, keyword alerts, clips, consent chat message | Recording-centric; follow-through left to other tools |
 | Notion AI Meeting Notes | Bot-free | Native Notion pages and database | Locked to Notion |
 | ChatGPT Record mode | macOS app | Summary into a canvas | Cloud audio; macOS only |

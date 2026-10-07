@@ -19,7 +19,7 @@ Zedex keeps track of what teams promise in meetings and makes sure it happens. M
 
 | Area | Rule |
 |---|---|
-| Media | Text only. No stored or uploaded audio, no video, no bot, no paid ASR. Local open-source ASR on the laptop. |
+| Media | Text only. Speech-to-text runs on a contracted streaming cloud provider with zero retention; Zedex never stores meeting audio, never uploads audio files, never records, and never joins as a bot. Uncertain values require human verification. |
 | Control | AI proposes; humans tick, confirm, close, approve. External writes need exact-payload approval. |
 | Access | Every request, event, job, retrieval, citation, report and export is authorized. Association ≠ access. Admins do not see private notes. |
 | Calendars | Read-only by default; optional write (codes, agenda) only at Gate 5 with consent. |
