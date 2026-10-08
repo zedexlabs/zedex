@@ -33,7 +33,10 @@ Each service owns one logical database. No cross-service joins; services hold fo
 
 **Association sources and precedence:** manual > series auto-add > rule/code > AI (only after confirmation). Association never changes access; access comes from authz tuples.
 
-## ingest (cell, sharded by workspace_id)
+## ingest (cell, distribution-ready by workspace_id)
+
+`workspace_id` leads every primary key and index; no cross-workspace joins, foreign keys, or global sequences. Starts as a logical database; moves to an elastic cluster on the ADR-029 trigger.
+
 
 `capture` (meeting, device owner, sources), `source` (microphone | meeting_audio), `segment` (client ID, sequence, start/end, text, source, **kind** [transcript | user_note], **word_confidence** [JSON word-level scores from STT provider]), `segment_revision` (append-only; reason), `sync_batch` (idempotency key, request hash, ack state), `gap` (interval, reason), `finalization`, `speech_session` (short-lived STT provider token; workspace policy and consent checked before issue), `outbox`, `inbox`.
 
@@ -49,9 +52,8 @@ Retention follows workspace policy (default 12 months). Several captures for one
 
 ## workspace additions for Phase 1
 
-Added to `workspace`:
-- `chunk_note` (capture_id, window_start, window_end, content JSON, flagged_values JSON, source_segment_ids, created_at) — built continuously during the meeting every ~5 min.
-- `meeting_card` (meeting_id, source_revision, chunk_note_ids, content JSON, flagged_values JSON, model/prompt version, created_at, invalidated_at) — built from chunk notes after finalization.
+Added to `workspace` (user-owned records, ADR-029):
+- `card_edit` (meeting_card_id, item_id, edit JSON, verified_values JSON, editor_id, version) — user edits and value verifications, preserved when the card is regenerated.
 - `summary_preference` (owner_id, name, style, length, focus, date_range?, project_id?, meeting_ids?, created_at) — saved summary preferences.
 - `agenda_item` gains columns: `previous_meeting_ref` (link to the previous meeting's item), `section` (previous | current | next).
 
@@ -62,7 +64,13 @@ Added to `workspace`:
 
 ## intelligence (cell)
 
-`summary` (source revision, template version, model/prompt version), `proposal` (decision | commitment | question | blocker, evidence refs, confidence), `brief`, `catch_up`, `agenda_draft`, `alert_rule`, `alert_match`, `chat_thread`, `chat_message` (citations), `index_state`, `prompt_run` (metadata only), `outbox`, `inbox`.
+Generated artefacts (Gate 2):
+- `chunk_note` (capture_id, window_start, window_end, content JSON, flagged_values JSON, source_segment_ids, created_at) — built during the meeting every ~5 min.
+- `meeting_card` (meeting_id, source_revision, chunk_note_ids, content JSON, flagged_values JSON, model/prompt version, created_at, invalidated_at) — built from chunk notes after finalization.
+- `summary_run` (requester, preference snapshot, source card IDs, output JSON, created_at, invalidated_at) — preference summaries built from meeting cards.
+- `retrieval_chunk` (workspace_id, meeting_id, segment_range, principal_set, text, tsvector, embedding vector, source_revision).
+
+Later gates: `summary` (source revision, template version, model/prompt version), `proposal` (decision | commitment | question | blocker, evidence refs, confidence), `brief`, `catch_up`, `agenda_draft`, `alert_rule`, `alert_match`, `chat_thread`, `chat_message` (citations), `index_state`, `prompt_run` (metadata only), `outbox`, `inbox`.
 
 Summaries and proposals store the **source revision** they were built from. If the source changes or access is revoked, the output is invalidated and rebuilt. Unknown owners and dates stay null.
 
@@ -76,8 +84,8 @@ Summaries and proposals store the **source revision** they were built from. If t
 
 ## Indexing and search
 
-- PostgreSQL: B-tree on `(workspace_id, …)` access paths; GIN for FTS; cursor pagination keys. Vector storage lives in AI Search, not Postgres.
-- AI Search index fields: `workspaceId`, `principalSet`, `meetingId`, `segmentRange`, `text`, `vector`, `sourceRevision`. Queries filter by workspace and principal set, then `BatchCheck` before results are shown or cited.
+- PostgreSQL: B-tree on `(workspace_id, …)` access paths; GIN for FTS; HNSW (pgvector) on `retrieval_chunk.embedding` in `intelligence`; cursor pagination keys. Queries filter by workspace and principal set, then `BatchCheck` before results are shown or cited.
+- If the ADR-029 retrieval trigger fires, Azure AI Search becomes a derived index with fields: `workspaceId`, `principalSet`, `meetingId`, `segmentRange`, `text`, `vector`, `sourceRevision`. Queries filter by workspace and principal set, then `BatchCheck` before results are shown or cited.
 
 ## Retention and deletion
 

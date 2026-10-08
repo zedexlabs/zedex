@@ -48,7 +48,7 @@ These are product commitments to customers, not implementation details. Any code
 - **Meeting popup:** Appears when a calendar event starts (or microphone activity is detected on a known meeting app). Shows title, attendees, and three actions: Start notes, Open prep, Dismiss. Never starts capture without an explicit click.
 - **Cloud STT capture:** The native C++ helper captures mic ("You") and system audio ("Others") via Core Audio (macOS) or WASAPI (Windows) and streams them over WebSocket to the cloud STT provider. Audio never passes through Zedex servers and is never stored. The helper obtains a short-lived session token from `ingest`; provider keys never reach devices.
 - **Compact overlay:** Agenda and notes panel hidden from screen share.
-- **Encrypted local store:** SQLite with whole-database encryption (SQLite3MultipleCiphers), key protected by Electron safeStorage, FTS5 for offline search.
+- **Encrypted segment outbox:** SQLite with whole-database encryption (SQLite3MultipleCiphers), key protected by Electron safeStorage; holds segments until `ingest` acknowledges them (ADR-029).
 - **Sync:** Batches transcript segments to the ingest service every ~10 s, on stop, and on reconnect. ACK only after server commit.
 - The shell loads the **web app** from our domain inside a locked-down window; all UI other than the popup/overlay is web. Shell and helper update rarely; UI ships through web deploys.
 
@@ -94,15 +94,15 @@ Right-sized services split on workload and failure boundaries, communicating thr
 
 | Component | Service |
 |---|---|
-| Compute | Azure Container Apps (consumption plan, scale to zero) |
-| Events | Azure Service Bus Standard (Phase 1); Premium later if needed |
-| Database | Azure Database for PostgreSQL Flexible Server (one server, logical DB per service) |
-| Search (Phase 2+) | Azure AI Search |
+| Compute | Azure Container Apps (consumption plan, scale to zero) + Container Apps Jobs (cron) |
+| Events | Azure Service Bus Standard (Phase 1, managed identity only); Premium on ADR-029 trigger |
+| Database | Azure Database for PostgreSQL Flexible Server (one server, logical DB per service; FTS + pgvector) |
+| Search | PostgreSQL FTS + pgvector; Azure AI Search only on ADR-029 trigger |
 | Realtime | Azure Web PubSub |
-| AI models | Azure OpenAI |
+| AI models | Azure OpenAI (Foundry Data Zone deployments) |
 | Secrets | Azure Key Vault |
-| CDN / WAF | Azure Front Door |
-| Object storage | Azure Blob Storage |
+| CDN / WAF | Azure Front Door (Standard → Premium before first external workspace) |
+| Object storage | Azure Blob Storage (web app static assets, installers, exports) |
 | Windows signing | Azure Artifact Signing |
 
 ### Global control plane
@@ -121,7 +121,7 @@ Start with `us-1` in East US 2. Add `eu-1` for residency, dedicated cells for en
 | `ingest` | Transcript sync, STT session tokens, revisions, finalization (sharded by workspace_id) | 2 |
 | `integration` | Calendar sync, connector adapters, token vault, egress limits | 2 |
 | `authz` (OpenFGA) | Relationship-based permissions | 2 |
-| `intelligence` | Chunk notes, meeting cards, summaries, agenda drafts, search/chat, alerts | 3 |
+| `intelligence` | Chunk notes, meeting cards, agenda drafts, preference summaries (Gate 2); search/chat, alerts (Gate 3) | 2 |
 | `live` | Low-latency in-meeting tick suggestions (stateless) | 3 |
 | `notification` | Email, Slack DM, in-app, brief scheduling | 3 |
 | `reporting` | Exports, reports, analytics read models | 3–4 |
@@ -156,14 +156,18 @@ Start with `us-1` in East US 2. Add `eu-1` for residency, dedicated cells for en
 - **Components:** Radix UI primitives
 - **Rich text:** TipTap (notes editor)
 - **Workflow canvas:** React Flow
-- **Design system:** `packages/ui` (shared between desktop and web)
+- **Design system:** `packages/ui` (web app; the desktop loads web routes)
+- **Drag-and-drop:** dnd-kit (Projects)
+- **Realtime client:** `@azure/web-pubsub-client`
 
 ### Desktop
-- **Shell:** Electron — thin shell loading the remote web app; sandboxed renderers, validated IPC
+- **Shell:** Electron — thin shell (`BaseWindow` + `WebContentsView`) loading allowlisted remote web routes; one system-browser sign-in with web-session handoff; validated IPC
 - **Capture:** C++ native helper (`native/capture-asr/`)
   - macOS: Core Audio process taps (system + microphone)
   - Windows: WASAPI (microphone + output loopback)
-  - Pipeline: PCM → mono → resample 16 kHz → Silero VAD → bounded windows → cloud STT stream
+  - Pipeline: PCM → OS echo cancellation → mono → resample 16 kHz (speexdsp) → libfvad VAD → cloud STT stream
+  - Networking: OS-native WebSockets (URLSessionWebSocketTask, WinHTTP); OS trust store and proxies
+  - Libraries pinned with vcpkg; no ONNX runtime
 - **STT:** Cloud provider (AssemblyAI or Deepgram; Gate 1 benchmark decides). Short-lived tokens from `ingest`.
 - **Distribution:** electron-updater staged rollouts; macOS: Developer ID + notarization; Windows: Azure Artifact Signing
 
@@ -193,14 +197,12 @@ Zedex/                          # pnpm workspace + Turborepo
         auth/                   # PKCE loopback, session
         capture/                # helper supervision, protocol, gap tracking
         detection/              # calendar + mic-activity triggers
-        storage/                # encrypted SQLite, key provider, migrations
-        sync/                   # queue, engine, changefeed
-        live/                   # tick suggestion client (Gate 3)
-        realtime/               # Web PubSub client
+        outbox/                 # encrypted segment outbox
+        sync/                   # segment sync engine
         updates/                # app updater (no model updater)
         telemetry.ts
       src/preload/              # narrow validated bridge
-      src/renderer/             # popup, overlay (app UI is web)
+      resources/offline.html    # only bundled page; popup, overlay, app are web routes
 
     web/                        # React SPA (all features)
       src/routes/               # workspace, teams, projects, meetings, prep,
@@ -209,8 +211,8 @@ Zedex/                          # pnpm workspace + Turborepo
       src/features/             # agenda, projects, search, canvas (Gate 5)
 
   services/                     # one directory per service
-    account/ workspace/ ingest/ integration/      # Gate 2
-    intelligence/ live/ notification/ reporting/  # Gate 3
+    account/ workspace/ ingest/ integration/ intelligence/  # Gate 2
+    live/ notification/ reporting/                          # Gate 3
     workflow/                                     # Gate 4
 
   packages/
@@ -221,13 +223,14 @@ Zedex/                          # pnpm workspace + Turborepo
     ai-kit/                     # Model gateway (Azure OpenAI), prompt registry,
                                 # structured output, evidence validation, budgets
     connector-sdk/              # Capability contract + test harness
-    ui/                         # Shared design system (desktop + web)
+    ui/                         # Web design system
 
   authz/                        # OpenFGA model + tests
   native/capture-asr/           # C++ capture helper
     src/platform/mac/           # Core Audio capture
     src/platform/win/           # WASAPI capture
-    src/core/                   # Cloud STT streaming protocol, VAD, health
+    src/core/                   # Cloud STT streaming, VAD, protocol, health
+    vcpkg.json                  # speexdsp, libfvad, nlohmann/json
 
   infra/azure/                  # Bicep IaC: global/, cell/, modules/, env/
   docker/
@@ -275,10 +278,10 @@ Gates do not close on a schedule. They close when exit criteria are met with evi
 - Consent basics; RLS and audit
 - Web app: sign-in, onboarding, all Phase 1 surfaces
 
-**Exit:** founders dogfood their own meetings across Zoom, Teams, and Meet on macOS and Windows; offline restart, idempotency, tenant isolation, and revocation tests pass; first cell live.
+**Exit:** founders dogfood their own meetings across Zoom, Teams, and Meet on macOS and Windows; restart with unacknowledged segments, idempotency, tenant isolation, and revocation tests pass; first cell live.
 
 ### Gate 3 — Meeting intelligence (Cycles 10–15)
-- Services: `intelligence`, `live`, `notification`, `reporting` (exports); Azure AI Search
+- Services: `live` (with Redis), `notification`, `reporting` (exports); AI Search only on ADR-029 trigger
 - Notes editor and templates, scoped search and chat, briefs, catch-up, coverage honesty
 - AI agenda with collaboration, live tick suggestions, highlights, prompts, personal alerts
 
@@ -365,13 +368,13 @@ A feature is **done** when ALL of the following are true:
 
 ---
 
-## 12. Key Decisions Made (ADRs 001–028)
+## 12. Key Decisions Made (ADRs 001–029)
 
 | Decision | Choice | Reason |
 |---|---|---|
 | Architecture style | Cell-based services | Failure isolation, team scaling, data residency |
 | Cloud | Azure | Existing plan, Windows signing, M365-heavy B2B customers |
-| Compute | Azure Container Apps (consumption) | Scale to zero, Phase 1 cost ~$30–50/month base |
+| Compute | Azure Container Apps (consumption) | Scale to zero; Phase 1 cell baseline ~$120–300/month (ADR-029) |
 | Events | Azure Service Bus Standard (Phase 1) | ~$0.0135/h; Premium only when needed |
 | Speech-to-text | Cloud provider (AssemblyAI / Deepgram, Gate 1 benchmark) | No model to ship, better accuracy, ~$3–5/user/month |
 | AI models | Azure OpenAI | Enterprise data processing terms; no Google ADK |
@@ -382,6 +385,7 @@ A feature is **done** when ALL of the following are true:
 | Clients | Desktop (capture) + Web (all features) | Desktop can't approve commits; web teammates need full access |
 | Workflow engine | Custom DAG interpreter (Postgres + Service Bus) | Exact-payload approval is domain data; Temporal has no managed Azure offering |
 | Billing | Stripe | Standard B2B path |
+| Stack alignment (ADR-029) | `intelligence` from Gate 2; Postgres retrieval; deferred Premium/Redis/AI Search/Citus with named triggers; segment outbox; OS-native helper networking | One consistent, scalable stack; components added on measured need |
 
 ---
 
@@ -389,13 +393,15 @@ A feature is **done** when ALL of the following are true:
 
 | Component | Est. monthly |
 |---|---|
-| Container Apps (6 services, consumption) | ~$15–25 |
-| PostgreSQL Flexible Server (1 server) | ~$12–18 |
+| Front Door Standard + WAF custom rules | ~$35 |
+| Container Apps (6 services + jobs, consumption) | ~$25–50 |
+| PostgreSQL Flexible Server (Burstable → General Purpose HA) | ~$30–140 |
 | Service Bus Standard | ~$10 |
-| Web PubSub | ~$5 |
+| Web PubSub (Free → 1 Standard unit) | ~$0–49 |
+| Key Vault, Application Insights, Log Analytics | ~$15–25 |
 | Azure OpenAI (text models) | Pay-per-use |
 | STT (AssemblyAI or Deepgram) | ~$3–5/user at 20 hr/month |
-| **Phase 1 cell base** | **~$40–60/month** |
+| **Phase 1 cell base (before usage)** | **~$120–300/month** |
 
 ---
 

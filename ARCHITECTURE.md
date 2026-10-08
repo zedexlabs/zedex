@@ -33,6 +33,7 @@ Right-sized services split on workload and failure boundaries, communicating thr
 ```mermaid
 flowchart LR
   D[Desktop app] & W[Web app] --> FD[Front Door + WAF]
+  D -. audio stream, short-lived token .-> STT[Cloud STT provider]
   FD --> CP[Control plane: account service]
   FD --> C1
   FD -.-> C2[Cell EU-1, later]
@@ -49,10 +50,11 @@ flowchart LR
     AZ[authz / OpenFGA]
     SB[(Service Bus)]
     PG[(PostgreSQL per service)]
-    AS[(AI Search)]
-    RD[(Redis)]
+    AS[(AI Search — on trigger)]:::later
+    RD[(Redis — with live, Gate 3)]:::later
     PS[Web PubSub]
   end
+  classDef later stroke-dasharray: 4 4
 ```
 
 | Service | Responsibility | Gate |
@@ -62,7 +64,7 @@ flowchart LR
 | ingest | Desktop transcript sync, revisions, finalization (sharded Postgres) | 2 |
 | integration | Calendars, connectors, token vault, webhooks, egress limits | 2 |
 | authz | OpenFGA relationship permissions | 2 |
-| intelligence | Summaries, briefs, agenda drafts, proposals, search/chat, alerts | 3 |
+| intelligence | Chunk notes, meeting cards, agenda drafts, preference summaries (Gate 2); briefs, proposals, search/chat, alerts (Gate 3) | 2 |
 | live | Low-latency in-meeting suggestions | 3 |
 | notification | Email, Slack DM, in-app, timed briefs | 3 |
 | reporting | Exports, reports, analytics read models | 3–4 |
@@ -83,7 +85,7 @@ flowchart LR
 | Infrastructure and operations | [09-infrastructure-operations](docs/architecture/09-infrastructure-operations.md) |
 | Repository structure | [10-repository-structure](docs/architecture/10-repository-structure.md) |
 | Quality and testing | [11-quality-testing](docs/architecture/11-quality-testing.md) |
-| Decisions (ADRs) | [decisions](docs/architecture/decisions.md) |
+| Decisions (ADRs); current stack in ADR-029 | [decisions](docs/architecture/decisions.md) |
 | Delivery gates and cycles | [DELIVERY_PLAN](docs/DELIVERY_PLAN.md) |
 | Workflows and discovery kit | [PRODUCT_WORKFLOWS](docs/PRODUCT_WORKFLOWS.md) |
 | Market, competitors, parity | [MARKET_RESEARCH](docs/MARKET_RESEARCH.md) |

@@ -28,7 +28,8 @@ Cycles are about two weeks and indicative; they depend on team size. A gate pass
 - Repository, CI/CD, global and cell infrastructure as code, `service-kit`, contracts.
 - Services: `account`, `workspace`, `ingest` (with `speech-sessions`), `integration` (Google/Microsoft calendars), `authz`.
 - Service Bus Standard with outbox/inbox, Web PubSub.
-- Desktop thin shell loading remote web app; meeting popup; native capture helper (cloud STT streaming); encrypted store; durable sync.
+- Services: `account`, `workspace`, `ingest`, `integration`, `authz`, `intelligence` (ADR-029).
+- Desktop thin shell loading remote web app; meeting popup; native capture helper (cloud STT streaming); encrypted segment outbox; durable sync.
 - Web app: sign-in, onboarding, all Phase 1 surfaces (see [PHASE_1_PLAN.md](PHASE_1_PLAN.md)).
 - **Projects** with drag-and-drop grouping, series auto-add, rules, and tracking-code detection.
 - **Agenda** (previous meeting / this meeting / next-meeting plan) — drafted by AI, accepted by humans.
@@ -36,12 +37,12 @@ Cycles are about two weeks and indicative; they depend on team size. A gate pass
 - **Typed notes** during the meeting that steer the AI summary.
 - Consent basics; RLS and audit.
 
-**Exit:** founders dogfood their own meetings across Zoom, Teams, and Meet on macOS and Windows; offline restart, idempotency, tenant isolation, and revocation tests pass; first cell live.
+**Exit:** founders dogfood their own meetings across Zoom, Teams, and Meet on macOS and Windows; restart with unacknowledged segments, idempotency, tenant isolation, and revocation tests pass; first cell live.
 
 ## Gate 3 — Meeting intelligence (cycles 10–15)
 
 **Scope**
-- Services: `intelligence`, `live`, `notification`, `reporting` (exports); AI Search.
+- Services: `live` (with Azure Managed Redis), `notification`, `reporting` (exports); `intelligence` extended. AI Search only if the ADR-029 retrieval trigger fires.
 - Notes editor and templates, summaries, scoped search and chat, briefs, catch-up, coverage honesty.
 - **AI agenda with collaboration**, **live tick suggestions**, highlights, prompts, personal alerts, AI routing suggestions and AI Channels, personal export.
 

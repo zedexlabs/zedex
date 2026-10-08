@@ -18,7 +18,7 @@
 | `ingest` | Cell | Captures, sources, transcript segments and revisions, sync batches, gaps, finalization; STT session tokens (`POST /speech-sessions` — checks policy, consent, budget, issues short-lived provider token) | HTTP, write volume | 2 |
 | `integration` | Cell | Connections, encrypted tokens, calendar subscriptions/cursors/events, external refs, operation attempts, inbound webhooks, provider transcript imports | Queue depth | 2 |
 | `authz` | Cell | OpenFGA store and model | Checks/s | 2 |
-| `intelligence` | Cell | Summaries, proposals, briefs, catch-ups, agenda drafts, alert rules/matches, chat threads, index state, prompt-run metadata | Queue depth, model quota | 3 |
+| `intelligence` | Cell | Chunk notes, meeting cards, agenda drafts, preference summaries, embeddings and retrieval index (Gate 2); proposals, briefs, catch-ups, alert rules/matches, chat threads (Gate 3); prompt-run metadata | Queue depth, model quota | 2 |
 | `live` | Cell | Stateless suggestion API; Redis budgets and short-lived meeting context | HTTP | 3 |
 | `notification` | Cell | Preferences, deliveries, digests, templates, brief scheduling | Queue depth | 3 |
 | `reporting` | Cell | Report definitions/runs, exports, analytics read models | Queue depth | 3 (exports), 4 (analytics) |
@@ -98,7 +98,8 @@ Payloads carry identifiers, revision numbers, and workspace ID only — never co
 |---|---|---|
 | `intelligence.generate-summary` | ingest/workspace | Summarize an authorized final transcript |
 | `intelligence.draft-agenda` | workspace/scheduler | Draft agenda for next occurrence |
-| `intelligence.index` / `intelligence.deindex` | workspace | Maintain search index |
+| `intelligence.build-meeting-card` | ingest | Build or rebuild the meeting card from chunk notes (ADR-027) |
+| `intelligence.index` / `intelligence.deindex` | workspace | Maintain the PostgreSQL retrieval index |
 | `integration.execute-operation` | workflow | Perform one approved external write |
 | `integration.sync-calendar` | webhook/scheduler | Incremental calendar sync |
 | `notification.send` | any | Deliver a notification |
@@ -118,7 +119,8 @@ Payloads carry identifiers, revision numbers, and workspace ID only — never co
 - **Inbox:** the handler inserts the message ID first. A duplicate is skipped.
 - **Idempotency:** `Idempotency-Key` header on every mutating call, stored with a request hash. The same key with a different body returns a conflict.
 - **Retries:** exponential backoff with jitter, bounded attempts, then dead-letter with an alert.
-- **Backpressure:** per-workspace fair queuing and rate limits (Redis token buckets). Overload degrades suggestions before capture or sync.
+- **Backpressure:** per-workspace fair queuing and rate limits. Until Redis arrives with `live` (Gate 3), rate limits run at Front Door and per-workspace budgets are PostgreSQL counters checked off the hot path; then Redis token buckets. Overload degrades suggestions before capture or sync.
+- **Timers:** Service Bus scheduled messages for per-entity timers (agenda draft at T-24 h); Container Apps Jobs (cron) for fleet tasks such as calendar watch renewal, nightly reconcile, budget resets, and retention purges.
 - **Never hold a database transaction across a network or model call.**
 
 ## API conventions

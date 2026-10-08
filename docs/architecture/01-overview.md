@@ -13,30 +13,31 @@
 
 | Actor / system | Interaction |
 |---|---|
-| Meeting participant using the desktop app | Captures meetings locally, writes notes, sees agenda and to-dos live, confirms suggestions |
+| Meeting participant using the desktop app | Captures meeting audio, streamed to cloud STT; writes notes, sees agenda and to-dos live, confirms suggestions |
 | Team member using the web app | Browses projects, prepares agendas, chats over history, reviews commitments, approves workflows |
 | Workspace admin | Manages teams, policies, integrations, retention, billing |
 | Google / Microsoft | Identity (via WorkOS) and read-only calendars |
 | HubSpot, Linear, Slack, Google Docs, Notion, Jira, Teams | Connector targets; remain authoritative for their records |
 | Azure OpenAI | Text-only model inference (no training on customer data) |
+| Cloud STT provider (AssemblyAI or Deepgram) | Streaming speech-to-text, zero retention, short-lived tokens issued by `ingest` |
 
 ## Containers
 
 | Container | Tech | Notes |
 |---|---|---|
-| Desktop app | Electron + React; C++ capture helper; encrypted SQLite | Local-first; works offline |
-| Web app | React SPA on Azure Static hosting via Front Door | Same design system as desktop |
-| Edge | Azure Front Door Premium + WAF | TLS, routing, rate limits |
+| Desktop app | Electron thin shell (`WebContentsView` loading allowlisted web routes); C++ capture helper; encrypted segment outbox | Needs network; unacknowledged segments survive restarts |
+| Web app | React SPA, static assets in Blob Storage behind Front Door | All product UI, including desktop popup and overlay routes |
+| Edge | Azure Front Door + WAF (Standard → Premium before the first external workspace) | TLS, routing, rate limits |
 | Control plane | `account` service + PostgreSQL | Global: identity, workspaces, teams, billing, cell directory |
-| Cell | 9 services + OpenFGA + Service Bus + PostgreSQL + AI Search + Redis + Web PubSub | Complete stack per cell |
+| Cell | 9 services + OpenFGA + Service Bus + PostgreSQL (FTS + pgvector) + Web PubSub; Redis with `live`, AI Search on trigger (ADR-029) | Complete stack per cell |
 
 ## Key flows
 
 **Capture and memory**
 1. The popup offers to start notes. The user starts capture.
-2. The helper transcribes locally. The desktop app stores encrypted text and syncs batches to `ingest`.
+2. The helper streams audio to the cloud STT provider and receives text. The desktop holds finalized text in an encrypted outbox and syncs batches to `ingest`.
 3. `ingest` commits and acknowledges, then emits `transcript.finalized` when the user stops.
-4. `intelligence` generates a summary and decision/commitment proposals with evidence, then indexes into AI Search.
+4. `intelligence` generates a summary and decision/commitment proposals with evidence, then indexes into PostgreSQL (FTS + pgvector).
 5. `workspace` presents the proposals for confirmation. `notification` tells participants.
 
 **Prep → live → wrap**

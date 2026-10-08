@@ -18,7 +18,7 @@ Planning and Markdown documentation only. Application development, package insta
 ## Documentation delivered
 
 - [ARCHITECTURE.md](../ARCHITECTURE.md): product, invariants, service map, document index, requirement traceability.
-- [docs/architecture/](architecture/): overview, desktop and native, services and communication, data model, intelligence, integrations, workflows and canvas, security and privacy, infrastructure and operations, repository structure, quality and testing, and the ADR log (ADR-001 through ADR-028).
+- [docs/architecture/](architecture/): overview, desktop and native, services and communication, data model, intelligence, integrations, workflows and canvas, security and privacy, infrastructure and operations, repository structure, quality and testing, and the ADR log (ADR-001 through ADR-029).
 - [DELIVERY_PLAN.md](DELIVERY_PLAN.md), [PRODUCT_WORKFLOWS.md](PRODUCT_WORKFLOWS.md), [MARKET_RESEARCH.md](MARKET_RESEARCH.md), [RESOURCES.md](RESOURCES.md).
 - [PHASE_1_PLAN.md](PHASE_1_PLAN.md): Phase 1 scope, user flows, services, milestones, exit criteria.
 - [TECHNICAL_RISKS.md](TECHNICAL_RISKS.md): full technical risk register for every feature, by phase.
@@ -26,6 +26,8 @@ Planning and Markdown documentation only. Application development, package insta
 - [ZEDEX_BRIEFING.md](ZEDEX_BRIEFING.md): complete project briefing updated to reflect Phase 1 decisions (cloud STT, web-first, Azure, ADR-023–028).
 
 **Plan revision applied (October 2026):** ADR-023 through ADR-028 added. Cloud STT replaces local ASR as default (ADR-012 superseded). Web-first with thin desktop shell (ADR-025). Layered summarisation (ADR-027). Azure Service Bus Standard for Phase 1 (ADR-028). Phase 1 feature set confirmed: calendar integration, Projects, agenda (previous/current/next), preference summaries, typed notes.
+
+**Stack alignment (October 2026):** ADR-029 sets one consistent stack: `intelligence` from Gate 2; PostgreSQL FTS + pgvector retrieval; Service Bus Premium, Redis, AI Search, and the `ingest` elastic cluster deferred to named triggers; Front Door Standard → Premium before external workspaces; thin shell with an encrypted segment outbox and one sign-in handoff; OS-native helper networking with speexdsp and libfvad; Data Zone model deployments.
 
 Supersedes the earlier modular-monolith plan (ADR-001).
 
@@ -48,11 +50,11 @@ No gate has passed. These documents establish no runtime behavior, hardware supp
 
 ## Known open items
 
-- Azure baseline cost not yet priced.
+- Azure baseline estimated in ADR-029 (~$120–300/month per cell before usage); to be confirmed in the Azure Pricing Calculator.
 - Screen-share protection on macOS is unqualified per meeting app; the plan claims best effort only.
 - Resource links in [RESOURCES.md](RESOURCES.md) are collected, not yet individually re-verified.
 - Legal and consent review has not started.
-- Parakeet/sherpa-onnx versus whisper.cpp is undecided until Gate 1 benchmarks.
+- STT provider (AssemblyAI vs Deepgram) is undecided until the Gate 1 benchmark.
 
 ## Implementation entry point
 

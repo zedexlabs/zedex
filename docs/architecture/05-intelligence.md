@@ -98,7 +98,7 @@ For a person and a series or Project: everything since their last review that th
 
 ### Search and chat
 - Scopes: meeting, series, project, account, team, authorized workspace.
-- Retrieval combines AI Search hybrid results, confirmed records, and fresh task status. Results pass the security trim and `BatchCheck`.
+- Retrieval combines PostgreSQL hybrid results (FTS + pgvector; AI Search only on the ADR-029 trigger), confirmed records, and fresh task status. Results pass the security trim and `BatchCheck`.
 - Answers cite segments and meetings and state missing or stale coverage. Corrections, access changes, and deletion invalidate cached answers.
 
 ### Alerts
@@ -106,6 +106,12 @@ Keyword/topic rules (Gate 3 personal, Gate 4 team) run on authorized final text 
 
 ### Prompts (read-only outputs)
 Saved prompts such as follow-up email, PRD, and feature-request extraction. They produce text only and never write externally; external writes belong to workflows.
+
+## Models (ADR-018, ADR-029)
+
+- Azure OpenAI through Microsoft Foundry Data Zone deployments (US; EU for `eu-1`), so inference stays in the declared geography.
+- A small model for chunk notes and agenda drafts, a larger model for meeting cards and rollups, `text-embedding-3-small` for embeddings; exact models chosen by the evaluation corpus.
+- Pay-as-you-go through Phase 1; provisioned throughput when sustained usage or the burst test justifies it.
 
 ## Evaluation and quality gates
 

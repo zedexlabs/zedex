@@ -12,28 +12,29 @@
 ## Topology
 
 **Global control plane** (per environment, DR in a paired region)
-- Azure Front Door Premium + WAF: TLS, routing to cells, rate limits.
+- Azure Front Door + WAF: TLS, routing to cells, rate limits. Standard (custom WAF rules) while only internal workspaces exist; Premium (managed rule sets, bot protection, Private Link origins) before the first external workspace.
 - `account` service on Container Apps with its own PostgreSQL.
-- Key Vault, Application Insights, Log Analytics, Blob for app/model assets.
-- Static hosting for the web app behind Front Door.
+- Key Vault, Application Insights, Log Analytics, Blob for desktop installers and update feeds.
+- Web app: hashed immutable assets in Blob Storage behind Front Door; `index.html` never cached; a preview deployment per pull request.
 
 **Cell** (identical, one Bicep module, parameterized by name, region, and scale)
 
 | Component | Azure service |
 |---|---|
-| Services (9) | Container Apps environment with workload profiles |
-| Databases | PostgreSQL Flexible Server (one server, separate logical databases per service at first; `ingest` on an elastic cluster) |
-| Messaging | Service Bus **Standard** (Phase 1); Premium when load or network isolation requires it (~$700/month per unit) |
+| Services (9) | Container Apps environment (consumption, dedicated profiles when baseline load is sustained) |
+| Scheduled work | Container Apps Jobs (cron): calendar watch renewal, nightly reconcile, budget resets, retention purges |
+| Databases | PostgreSQL Flexible Server: one server, a logical database per service; Burstable outside production, General Purpose with zone-redundant HA from the first external workspace. `ingest` is distribution-ready and moves to an elastic cluster on the ADR-029 trigger |
+| Messaging | Service Bus **Standard** (Phase 1), local/SAS auth disabled, managed identities only; Premium (~$700/month per unit) on the ADR-029 triggers |
 | Realtime | Web PubSub |
-| Cache and budgets | Azure Managed Redis (Phase 2+; not in Phase 1) |
-| Retrieval | Azure AI Search (Phase 2+; Phase 1 uses Postgres FTS + pgvector) |
+| Cache and budgets | PostgreSQL counters and Front Door rate limits in Phase 1; Azure Managed Redis with `live` (Gate 3) |
+| Retrieval | PostgreSQL FTS + pgvector (HNSW) in `intelligence`; Azure AI Search only on the ADR-029 trigger |
 | STT | Cloud provider (AssemblyAI or Deepgram); tokens issued by `ingest`; ~$3–5/user/month at 20 hr/month |
-| Models | Azure OpenAI deployments: summary, chat, live, embeddings |
+| Models | Azure OpenAI Data Zone deployments: chunk/agenda, card/rollup, chat, live, embeddings |
 | Authorization | OpenFGA on Container Apps with its own PostgreSQL database |
 | Storage | Blob (private exports, 7-day expiry) |
 | Secrets/identity | Key Vault, managed identities |
 | Email | Azure Communication Services |
-| Network | Private endpoints and VNet integration; no public database access |
+| Network | VNet integration; private endpoints for PostgreSQL, Key Vault, and Storage; no public database access. Service Bus private endpoint requires Premium (ADR-029 trigger) |
 
 First cell: `us-1` in East US 2, subject to capacity and model quota. Declare storage and model geography per workspace.
 
@@ -59,10 +60,10 @@ Database migrations are forward-only (expand → migrate → contract) and run b
 | Concern | Mechanism |
 |---|---|
 | Stateless services | KEDA on HTTP concurrency, CPU, and Service Bus queue length; minimum replicas on latency-critical paths (`ingest`, `live`, `workspace`) |
-| Bursts at :00/:30 | Queue levelling, per-workspace fair queuing, Redis token buckets |
-| Model capacity | Provisioned throughput baseline + spillover; second deployment for failover; per-workspace budgets |
-| Writes | `ingest` on a sharded elastic cluster by `workspace_id` |
-| Search | AI Search partitions and replicas |
+| Bursts at :00/:30 | Queue levelling, per-workspace fair queuing; Redis token buckets from Gate 3 |
+| Model capacity | Pay-as-you-go in Phase 1; provisioned throughput baseline + spillover when justified; second deployment for failover; per-workspace budgets |
+| Writes | `ingest` distribution-ready by `workspace_id`; elastic cluster on load-test trigger |
+| Search | pgvector HNSW and FTS in `intelligence`; AI Search partitions and replicas once triggered |
 | Realtime | Web PubSub units |
 | Tenancy | **Add cells**; size limits come from load tests (qualification target: 100 workspaces, 1,000 concurrent capturing clients, 1M segments per cell) |
 | Connection budgets | Pools per service sized below server limits with headroom |
@@ -100,8 +101,8 @@ Alerts page on error-budget burn, queue age, dead letters, uncertain operations,
 
 ## Cost
 
-- Free local ASR removes ASR fees but not Azure, model, identity, distribution, and support costs.
-- Price the baseline (Service Bus Premium, AI Search, Redis, databases, models) with the Azure Pricing Calculator in Gate 1–2 and track cost per workspace.
+- Phase 1 baseline per cell before usage (ADR-029): Front Door Standard ~$35, PostgreSQL ~$30–140, Container Apps ~$25–50, Service Bus Standard ~$10, Web PubSub ~$0–49, Key Vault and monitoring ~$15–25 — **~$120–300/month**. Usage adds STT (~$3–5/user/month) and models.
+- Confirm the baseline with the Azure Pricing Calculator in Gate 1–2 and track cost per workspace and feature. Price each deferred component (Service Bus Premium, Redis, AI Search, elastic cluster) when its trigger approaches.
 - Small SKUs outside production; start with one cell; scale-to-zero for non-critical workers where safe.
 - Cache valid results, process incrementally, use smaller qualified models, and enforce allowances without silent overages.
 

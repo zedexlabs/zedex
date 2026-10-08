@@ -17,7 +17,8 @@
 | Integration | Services against real PostgreSQL and the Service Bus emulator; RLS; outbox/inbox; idempotency | Vitest, Testcontainers |
 | Contract | Event and HTTP schemas between producers and consumers; helper protocol; IPC | Zod schema tests, AsyncAPI/OpenAPI diff |
 | Security | Tenant isolation, authorization per endpoint/event/query, prompt injection, token handling | Dedicated suite in `tests/security` |
-| End-to-end | Desktop ↔ cell flows, web flows | Playwright, Electron driver |
+| End-to-end | Web flows; desktop shell ↔ cell flows (capture, sync, handoff) | Playwright, Electron driver |
+| STT | Provider adapters against recorded responses from consented audio (CI); live provider suite run only with authorization | Vitest, CTest, `bench/stt_benchmark` |
 | Resilience | Provider/model outage, broker delay, duplicate delivery, cell failover | Fault injection in `tests/resilience` |
 | Performance | Sync load, finalization bursts, live-suggestion latency, cell qualification | k6 / custom in `tests/performance` |
 | Evaluation | Grounding, null owners, stale sources, access leaks, live precision/recall | `tests/evaluations` |
@@ -28,8 +29,8 @@
 |---|---|
 | Four targets | macOS arm64/x64, Windows x64/arm64 real devices |
 | Audio paths | Headphones, speakerphone echo, Bluetooth, device and permission changes |
-| ASR | Accents, names, numbers, silence, overlap, resource use under full two-source load |
-| Memory | ≤ 60 s audio per source; no audio on disk |
+| STT | WER, accents, names, numbers, word-confidence calibration, silence, overlap, reconnect from the ring buffer, corporate proxy, resource use under full two-source load |
+| Memory | ≤ 30 s audio per source in RAM; no audio on disk |
 | Popup/overlay | Position, focus, DPI, multi-display |
 | Screen-share protection | Matrix: Zoom, Meet, Teams, Slack, browser share × macOS versions × Windows 11 |
 | Meeting detection | Per meeting app and browser |
@@ -39,7 +40,8 @@ Benchmark audio is licensed or consented and used only in test environments. A s
 
 ## Required test cases (non-exhaustive)
 
-- **Storage:** encryption, corruption, restart, identity switch.
+- **Desktop outbox:** encryption, corruption, restart with unacknowledged segments, purge after ACK, identity switch.
+- **Desktop shell:** origin allowlist, CSP, preload API surface, sign-in handoff code is single-use and short-lived.
 - **Sync:** offline, duplicate batches, changed payload under a reused key, revisions, ACK-after-commit, gaps.
 - **Data:** real PostgreSQL constraints, transactions, RLS, no cross-service access.
 - **Access:** cross-tenant, private notes vs admin, revocation mid-run, share changes invalidating derived content.

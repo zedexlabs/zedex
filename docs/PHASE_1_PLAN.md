@@ -38,7 +38,7 @@ Phase 1 is the **first shippable product**. Its goal: founders dogfood their own
 | Meeting popup | Triggered by calendar event or mic activity. Three actions: Start notes, Open prep, Dismiss. Consent reminder when policy requires. |
 | Compact overlay | Agenda and notes panel, hidden from screen share by default. |
 | Native capture helper | Streams mic and system audio over WebSocket to cloud STT. Gets a short-lived session token from `ingest`. Audio never passes through Zedex servers. RAM ring buffer ≤ 30 s for reconnect. Gap reporting. |
-| Encrypted local store | SQLite with SQLite3MultipleCiphers, key via Electron safeStorage. Transcript cache and local state. |
+| Encrypted segment outbox | SQLite with SQLite3MultipleCiphers, key via Electron safeStorage. Holds finalized segments until `ingest` acknowledges them, then purges (ADR-029). |
 | Sync | Batches transcript segments to `ingest` every ~10 s, on stop, and on reconnect. ACK after server commit. |
 
 ---
@@ -54,14 +54,17 @@ A strict subset of the 9 services. Later services are not introduced until their
 | `ingest` | Transcript segment sync, STT session tokens (`POST /speech-sessions`), finalization, segment revisions, sharded by workspace_id |
 | `integration` | Google Calendar and Microsoft Outlook sync — events, attendees, conferencing links, watch channels, delta tokens |
 | `authz` | OpenFGA relationship tuples for workspace membership, team, project access, meeting access |
+| `intelligence` | Chunk notes, meeting cards, agenda drafts, preference summaries, embeddings and Postgres retrieval index, using Azure OpenAI (ADR-029) |
 
-**Not in Phase 1 (live at Gate 3+):** `intelligence` as a separate service (chunk-note and meeting-card pipeline runs inside `workspace` in Phase 1 using Azure OpenAI), `live`, `notification`, `reporting`, `workflow`.
+**Not in Phase 1 (Gate 3+):** `live`, `notification`, `reporting`, `workflow`. Model calls never run inside `workspace`; `intelligence` owns them from Phase 1 (ADR-029).
 
 **Infrastructure:**
-- Azure Service Bus Standard (one topic per producing service)
+- Azure Front Door Standard + WAF custom rules; web app as static assets in Blob Storage
+- Azure Container Apps (consumption) and Container Apps Jobs for calendar renewal and reconcile
+- Azure Service Bus Standard (one topic per producing service; managed-identity access only)
 - One PostgreSQL Flexible Server per cell, logical database per service
 - Postgres full-text search + pgvector for search (no Azure AI Search until Phase 2)
-- No Redis
+- No Redis (budgets are PostgreSQL counters; rate limits at Front Door)
 
 ---
 

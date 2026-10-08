@@ -112,7 +112,9 @@ Every significant feature carries technical risks. This register names them, sta
 |---|---|
 | Security of remotely loaded content | ADR-025 hardening: sandbox, contextIsolation, origin allowlist, CSP, narrow preload API |
 | Shell loads a compromised version of the web app | Certificate pinning and integrity checks on the allowed origin; alert on unexpected content changes |
-| Web app is unreachable (network outage) | The helper continues capturing; segments are buffered locally in SQLite; sync resumes on reconnect |
+| Web app is unreachable (network outage) | The helper keeps streaming to STT while it is reachable; finalized segments wait in the encrypted outbox and are purged after `ingest` acknowledges them |
+| Sign-in handoff code is intercepted or replayed | Single-use, short-lived code bound to the loopback PKCE session; exchanged only by `account` over TLS |
+| Corporate proxy or TLS inspection blocks the STT WebSocket | OS-native WebSocket clients honour system proxy settings and the OS trust store; a clear capture-health error names the blocked host |
 
 ### Tenancy and cross-workspace isolation
 
@@ -140,12 +142,13 @@ Every significant feature carries technical risks. This register names them, sta
 | Brief built from meeting the recipient can't access | Source meetings checked via OpenFGA before brief is generated; "Not captured" shown if no authorized source |
 | Brief scheduled too early (meeting not yet finalized) | Brief job waits for finalization event or uses meeting card if partially ready |
 
-### AI Search
+### Retrieval (PostgreSQL → AI Search on trigger, ADR-029)
 
 | Risk | Mitigation |
 |---|---|
 | Security trimming fails on vector results | Pre-filter by OpenFGA principal set; batch-recheck top-N results before returning |
-| Azure AI Search cost at pilot scale | Monitor per-workspace index size; cap index growth by tier |
+| pgvector recall or latency degrades as the index grows | HNSW tuning; per-workspace partial indexes; move to AI Search when the ADR-029 trigger fires (> 5 M vectors, p95 > 300 ms, or relevance eval failure) |
+| Azure AI Search cost once adopted | Monitor per-workspace index size; cap index growth by tier |
 
 ---
 

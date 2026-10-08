@@ -46,21 +46,37 @@ Official or primary sources by topic. Recheck each at implementation and record 
 | sherpa-onnx | https://github.com/k2-fsa/sherpa-onnx |
 | Parakeet-TDT 0.6B v3 (CC-BY-4.0) | https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3 |
 
+## Native helper and desktop shell (ADR-029)
+
+| Topic | Link |
+|---|---|
+| libfvad (WebRTC VAD) | https://github.com/dpirch/libfvad |
+| speexdsp | https://github.com/xiph/speexdsp |
+| URLSessionWebSocketTask | https://developer.apple.com/documentation/foundation/urlsessionwebsockettask |
+| WinHTTP WebSocket | https://learn.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpwebsocketcompleteupgrade |
+| Electron WebContentsView | https://www.electronjs.org/docs/latest/api/web-contents-view |
+| vcpkg manifest mode | https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode |
+| dnd-kit | https://dndkit.com/ |
+
 ## Backend and data
 
 | Topic | Link |
 |---|---|
 | Fastify (TypeScript) | https://fastify.dev/docs/latest/Reference/TypeScript/ |
 | PostgreSQL row-level security | https://www.postgresql.org/docs/current/ddl-rowsecurity.html |
-| Azure PostgreSQL elastic clusters (Citus) | https://learn.microsoft.com/en-us/azure/postgresql/elastic-clusters/concepts-elastic-clusters |
+| Azure PostgreSQL elastic clusters (Citus; on ADR-029 trigger) | https://learn.microsoft.com/en-us/azure/postgresql/elastic-clusters/concepts-elastic-clusters |
 | pgvector on Azure PostgreSQL | https://learn.microsoft.com/en-us/azure/postgresql/extensions/how-to-use-pgvector |
 | OpenFGA | https://openfga.dev/ |
 | SpiceDB (alternative reviewed) | https://authzed.com/docs/spicedb |
-| Azure AI Search security trimming | https://learn.microsoft.com/en-us/azure/search/search-security-trimming-for-azure-search |
+| Azure AI Search security trimming (on ADR-029 trigger) | https://learn.microsoft.com/en-us/azure/search/search-security-trimming-for-azure-search |
 | Azure Service Bus | https://learn.microsoft.com/en-us/azure/service-bus-messaging/ |
 | Azure Web PubSub | https://learn.microsoft.com/en-us/azure/azure-web-pubsub/ |
-| Azure Managed Redis | https://learn.microsoft.com/en-us/azure/redis/ |
+| Azure Managed Redis (Gate 3, with `live`) | https://learn.microsoft.com/en-us/azure/redis/ |
 | AsyncAPI | https://www.asyncapi.com/docs |
+| pgvector | https://github.com/pgvector/pgvector |
+| Azure Container Apps jobs | https://learn.microsoft.com/en-us/azure/container-apps/jobs |
+| Azure Front Door tier comparison | https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/tier-comparison |
+| Azure OpenAI deployment types (Data Zone) | https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/deployment-types |
 
 ## Identity and integrations
 
