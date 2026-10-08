@@ -87,6 +87,9 @@ flowchart LR
 | Quality and testing | [11-quality-testing](docs/architecture/11-quality-testing.md) |
 | Decisions (ADRs); current stack in ADR-029 | [decisions](docs/architecture/decisions.md) |
 | Delivery gates and cycles | [DELIVERY_PLAN](docs/DELIVERY_PLAN.md) |
+| Phase 1 implementation steps | [PHASE_1_IMPLEMENTATION](docs/PHASE_1_IMPLEMENTATION.md) |
+| Team assignments and branch management | [TEAM_TASKS](docs/TEAM_TASKS.md) |
+| UI pages and element inventory | [UI_PAGES](docs/UI_PAGES.md) |
 | Workflows and discovery kit | [PRODUCT_WORKFLOWS](docs/PRODUCT_WORKFLOWS.md) |
 | Market, competitors, parity | [MARKET_RESEARCH](docs/MARKET_RESEARCH.md) |
 | All external links | [RESOURCES](docs/RESOURCES.md) |

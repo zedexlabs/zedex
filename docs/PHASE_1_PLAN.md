@@ -58,6 +58,8 @@ A strict subset of the 9 services. Later services are not introduced until their
 
 **Not in Phase 1 (Gate 3+):** `live`, `notification`, `reporting`, `workflow`. Model calls never run inside `workspace`; `intelligence` owns them from Phase 1 (ADR-029).
 
+**Team assignments:** see [TEAM_TASKS.md](TEAM_TASKS.md) for branch management, ownership per service, and the full dependency order. Individual task files: [Udula](tasks/UDULA_TASKS.md) · [Sinthujan](tasks/SINTHUJAN_TASKS.md) · [Founder](tasks/FOUNDER_TASKS.md).
+
 **Infrastructure:**
 - Azure Front Door Standard + WAF custom rules; web app as static assets in Blob Storage
 - Azure Container Apps (consumption) and Container Apps Jobs for calendar renewal and reconcile

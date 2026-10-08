@@ -24,6 +24,11 @@ Planning and Markdown documentation only. Application development, package insta
 - [TECHNICAL_RISKS.md](TECHNICAL_RISKS.md): full technical risk register for every feature, by phase.
 - [AGENTS.md](../AGENTS.md) with the production standard and Definition of Done; [CLAUDE.md](../CLAUDE.md).
 - [ZEDEX_BRIEFING.md](ZEDEX_BRIEFING.md): complete project briefing updated to reflect Phase 1 decisions (cloud STT, web-first, Azure, ADR-023–028).
+- [UI_PAGES.md](UI_PAGES.md): full UI page and element inventory (all pages, buttons, and desktop surfaces DS-1 to DS-6).
+- [TEAM_TASKS.md](TEAM_TASKS.md): team assignments, branch management (dev / staging / main), and dependency order for Phase 1.
+- [tasks/UDULA_TASKS.md](tasks/UDULA_TASKS.md): Udula's full task list — benchmarks, foundation, desktop shell + C++ helper, intelligence service.
+- [tasks/SINTHUJAN_TASKS.md](tasks/SINTHUJAN_TASKS.md): Sinthujan's full task list — auth, calendar integration, projects backend, agenda backend.
+- [tasks/FOUNDER_TASKS.md](tasks/FOUNDER_TASKS.md): Founder's full task list — all web UI, supervision, milestone sign-off.
 
 **Plan revision applied (October 2026):** ADR-023 through ADR-028 added. Cloud STT replaces local ASR as default (ADR-012 superseded). Web-first with thin desktop shell (ADR-025). Layered summarisation (ADR-027). Azure Service Bus Standard for Phase 1 (ADR-028). Phase 1 feature set confirmed: calendar integration, Projects, agenda (previous/current/next), preference summaries, typed notes.
 
