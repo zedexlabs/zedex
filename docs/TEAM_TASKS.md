@@ -15,7 +15,7 @@
 See individual task files:
 - [UDULA_TASKS.md](tasks/UDULA_TASKS.md) — foundation, desktop, intelligence
 - [SINTHUJAN_TASKS.md](tasks/SINTHUJAN_TASKS.md) — auth, calendar, projects, agenda backend
-- [FOUNDER_TASKS.md](tasks/FOUNDER_TASKS.md) — all web UI, supervision, product decisions
+- [THANO_TASKS.md](tasks/THANO_TASKS.md) — all web UI, supervision, product decisions
 
 ---
 

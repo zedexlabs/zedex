@@ -28,7 +28,7 @@ Planning and Markdown documentation only. Application development, package insta
 - [TEAM_TASKS.md](TEAM_TASKS.md): team assignments, branch management (dev / staging / main), and dependency order for Phase 1.
 - [tasks/UDULA_TASKS.md](tasks/UDULA_TASKS.md): Udula's full task list — benchmarks, foundation, desktop shell + C++ helper, intelligence service.
 - [tasks/SINTHUJAN_TASKS.md](tasks/SINTHUJAN_TASKS.md): Sinthujan's full task list — auth, calendar integration, projects backend, agenda backend.
-- [tasks/FOUNDER_TASKS.md](tasks/FOUNDER_TASKS.md): Founder's full task list — all web UI, supervision, milestone sign-off.
+- [tasks/THANO_TASKS.md](tasks/THANO_TASKS.md): Thano's full task list — all web UI, supervision, milestone sign-off.
 
 **Plan revision applied (October 2026):** ADR-023 through ADR-028 added. Cloud STT replaces local ASR as default (ADR-012 superseded). Web-first with thin desktop shell (ADR-025). Layered summarisation (ADR-027). Azure Service Bus Standard for Phase 1 (ADR-028). Phase 1 feature set confirmed: calendar integration, Projects, agenda (previous/current/next), preference summaries, typed notes.
 

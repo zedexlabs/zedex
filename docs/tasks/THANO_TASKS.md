@@ -8,9 +8,9 @@
 
 ---
 
-# Founder — Phase 1 Task Assignment
+# Thano — Phase 1 Task Assignment
 
-Your role in Phase 1: build all web UI, own all product decisions, review every PR, and sign off at each milestone before it promotes to staging. You supervise but you also ship — the web app is yours.
+Your role in Phase 1: build all web UI, own all product decisions, review every PR, and sign off at each milestone before it promotes to staging. You ship the web app and you set the direction for the product.
 
 Read these documents before starting UI work:
 - [`docs/UI_PAGES.md`](../UI_PAGES.md) — every page, every button, every element. This is your spec.
@@ -149,12 +149,11 @@ At the end of each milestone, before approving the `dev → staging` PR:
 
 ### Product decisions
 
-Any question about what a feature should do — edge cases, wording, whether something is in scope — comes to you, not to Udula or Sinthujan. The developers build what is decided; they do not decide.
+Any question about what a feature should do — edge cases, wording, whether something is in scope — comes to you. The developers build what is decided; they do not decide.
 
 ### 2-week dogfood (M9)
 
-At milestone 9, the founders run 2 weeks of real meeting capture on the staging cell:
-- Use Zedex for your own internal meetings every day
+At milestone 9, use Zedex for your own real meetings every day on the staging cell:
 - Record issues in the repo as bugs
 - Confirm exit criteria evidence in `IMPLEMENTATION_STATUS.md`:
   - Capture works on macOS and Windows with Zoom, Teams, and Meet

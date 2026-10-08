@@ -10,7 +10,7 @@
 
 # Sinthujan — Phase 1 Task Assignment
 
-Hi Sinthujan. You are building the backend services that handle user accounts, access control, calendar data, projects, and agenda logic. These services are the backbone that every other service depends on. The tasks are well-defined, use standard patterns, and have clear acceptance criteria. Build them solidly and test every edge case — Udula's intelligence service and the founder's web UI both sit on top of what you build.
+Hi Sinthujan. You are building the backend services that handle user accounts, access control, calendar data, projects, and agenda logic. These are the services every other part of Zedex depends on — the security boundary, the calendar pipeline, and the meeting organisation layer all live here. Build them solidly and test every edge case.
 
 Read these documents before starting anything:
 - [`ARCHITECTURE.md`](../../ARCHITECTURE.md) — full system overview and non-negotiables
