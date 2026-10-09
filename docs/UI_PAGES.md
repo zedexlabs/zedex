@@ -12,6 +12,8 @@
 
 **Purpose:** Context document for designers and Claude Code. Lists every screen, the elements it contains, and the intent of each action. Does not specify color, layout, or spacing — those are implementation concerns.
 
+**Related:** realistic content for every page is in [UI_SAMPLE_DATA.md](UI_SAMPLE_DATA.md); workflows (phases W1–W3, the combine-and-summarize flow, approvals, canvas) are explained in [WORKFLOWS_SPEC.md](WORKFLOWS_SPEC.md).
+
 **Delivery scope:** Pages are grouped by Gate. Gates 2–3 cover Phase 1. Later gates are included so the design system can be planned in full from the start.
 
 ---

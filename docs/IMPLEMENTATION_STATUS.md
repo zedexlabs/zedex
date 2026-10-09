@@ -25,6 +25,8 @@ Planning and Markdown documentation only. Application development, package insta
 - [AGENTS.md](../AGENTS.md) with the production standard and Definition of Done; [CLAUDE.md](../CLAUDE.md).
 - [ZEDEX_BRIEFING.md](ZEDEX_BRIEFING.md): complete project briefing updated to reflect Phase 1 decisions (cloud STT, web-first, Azure, ADR-023–028).
 - [UI_PAGES.md](UI_PAGES.md): full UI page and element inventory (all pages, buttons, and desktop surfaces DS-1 to DS-6).
+- [UI_SAMPLE_DATA.md](UI_SAMPLE_DATA.md): one consistent fictional dataset for every page and state.
+- [WORKFLOWS_SPEC.md](WORKFLOWS_SPEC.md): workflows explained in plain language and phased (W1 combine and summarize, W2 triggers and approved actions, W3 canvas).
 - [TEAM_TASKS.md](TEAM_TASKS.md): team assignments, branch management (dev / staging / main), and dependency order for Phase 1.
 - [tasks/UDULA_TASKS.md](tasks/UDULA_TASKS.md): Udula's full task list — benchmarks, foundation, desktop shell + C++ helper, intelligence service.
 - [tasks/SINTHUJAN_TASKS.md](tasks/SINTHUJAN_TASKS.md): Sinthujan's full task list — auth, calendar integration, projects backend, agenda backend.

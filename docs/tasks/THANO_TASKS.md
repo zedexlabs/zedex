@@ -56,7 +56,7 @@ You can start building UI scaffolding and static pages immediately. Pages that c
 
 ## Web pages to build
 
-All page and element specs are in [`docs/UI_PAGES.md`](../UI_PAGES.md). This list maps each page to its step and gives the build priority.
+All page and element specs are in [`docs/UI_PAGES.md`](../UI_PAGES.md), with realistic content for every page in [`docs/UI_SAMPLE_DATA.md`](../UI_SAMPLE_DATA.md) and the workflow behavior in [`docs/WORKFLOWS_SPEC.md`](../WORKFLOWS_SPEC.md) (build W1, combine and summarize, with W-40 first). This list maps each page to its step and gives the build priority.
 
 ### Auth and onboarding (W-01 to W-05) — Step 2 dependency
 
